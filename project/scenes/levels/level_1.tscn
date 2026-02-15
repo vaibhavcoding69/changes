@@ -1,150 +1,351 @@
-[gd_scene load_steps=8 format=3 uid="uid://blevel01"]
+[gd_scene load_steps=17 format=3 uid="uid://blevel01"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/goal.gd" id="2_goal"]
 [ext_resource type="Script" path="res://scripts/camera.gd" id="3_camera"]
+[ext_resource type="Script" path="res://scripts/game_manager.gd" id="4_manager"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+[sub_resource type="CircleShape2D" id="circle_player"]
 radius = 20.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform1"]
-size = Vector2(250, 20)
+[sub_resource type="RectangleShape2D" id="rect_floor"]
+size = Vector2(1400, 20)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform2"]
-size = Vector2(300, 20)
+[sub_resource type="RectangleShape2D" id="rect_wall_l"]
+size = Vector2(20, 900)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform3"]
-size = Vector2(280, 20)
+[sub_resource type="RectangleShape2D" id="rect_wall_r"]
+size = Vector2(20, 900)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
-size = Vector2(1200, 20)
+[sub_resource type="RectangleShape2D" id="rect_p1"]
+size = Vector2(280, 18)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_goal"]
-size = Vector2(50, 50)
+[sub_resource type="RectangleShape2D" id="rect_p2"]
+size = Vector2(200, 18)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_left"]
-size = Vector2(20, 800)
+[sub_resource type="RectangleShape2D" id="rect_p3"]
+size = Vector2(320, 18)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall_right"]
-size = Vector2(20, 800)
+[sub_resource type="RectangleShape2D" id="rect_p4"]
+size = Vector2(220, 18)
+
+[sub_resource type="RectangleShape2D" id="rect_p5"]
+size = Vector2(180, 18)
+
+[sub_resource type="CircleShape2D" id="circle_goal"]
+radius = 30.0
+
+[sub_resource type="Gradient" id="grad_trail"]
+colors = PackedColorArray(0.95, 0.88, 0.72, 0.45, 0.95, 0.88, 0.72, 0.0)
+offsets = PackedFloat32Array(0, 1)
+
+[sub_resource type="Curve" id="curve_trail_w"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+min_value = 0.0
+max_value = 1.0
 
 [node name="Level1" type="Node2D"]
+script = ExtResource("4_manager")
 
 [node name="Background" type="ColorRect" parent="."]
-anchors_preset = 15
-offset_left = -100.0
-offset_top = -100.0
-offset_right = 1300.0
-offset_bottom = 900.0
-color = Color(0.15, 0.17, 0.22, 1)
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 1400.0
+offset_bottom = 1000.0
+color = Color(0.1, 0.12, 0.17, 1)
+
+[node name="BackgroundGrad" type="ColorRect" parent="."]
+offset_left = -200.0
+offset_top = -200.0
+offset_right = 1400.0
+offset_bottom = 400.0
+color = Color(0.14, 0.16, 0.22, 0.6)
+
+[node name="AmbientParticles" type="CPUParticles2D" parent="."]
+position = Vector2(600, 400)
+emitting = true
+amount = 25
+lifetime = 5.0
+emission_shape = 3
+emission_rect_extents = Vector2(700, 500)
+direction = Vector2(0.2, -1)
+spread = 25.0
+initial_velocity_min = 4.0
+initial_velocity_max = 15.0
+gravity = Vector2(0, -3)
+scale_amount_min = 1.0
+scale_amount_max = 3.0
+color = Color(1, 1, 1, 0.035)
 
 [node name="Player" type="RigidBody2D" parent="."]
-position = Vector2(150, 200)
+position = Vector2(150, 270)
 mass = 1.0
 continuous_cd = 1
+contact_monitor = true
+max_contacts_reported = 4
+lock_rotation = true
 script = ExtResource("1_player")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
-shape = SubResource("CircleShape2D_player")
+shape = SubResource("circle_player")
 
-[node name="Sprite2D" type="Sprite2D" parent="Player"]
+[node name="Trail" type="Line2D" parent="Player"]
+top_level = true
+width = 7.0
+default_color = Color(0.95, 0.88, 0.72, 0.4)
+gradient = SubResource("grad_trail")
+width_curve = SubResource("curve_trail_w")
+begin_cap_mode = 2
+end_cap_mode = 2
 
-[node name="BallVisual" type="ColorRect" parent="Player"]
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-color = Color(0.9, 0.85, 0.7, 1)
+[node name="LaunchParticles" type="CPUParticles2D" parent="Player"]
+emitting = false
+amount = 20
+one_shot = true
+explosiveness = 1.0
+lifetime = 0.45
+direction = Vector2(0, 0)
+spread = 180.0
+initial_velocity_min = 80.0
+initial_velocity_max = 220.0
+gravity = Vector2(0, 100)
+scale_amount_min = 2.0
+scale_amount_max = 5.0
+color = Color(1, 0.95, 0.82, 0.6)
 
-[node name="TrajectoryLine" type="Line2D" parent="Player"]
-width = 2.0
-default_color = Color(1, 1, 1, 0.4)
+[node name="ImpactParticles" type="CPUParticles2D" parent="Player"]
+emitting = false
+amount = 12
+one_shot = true
+explosiveness = 1.0
+lifetime = 0.35
+direction = Vector2(0, -1)
+spread = 120.0
+initial_velocity_min = 40.0
+initial_velocity_max = 140.0
+gravity = Vector2(0, 250)
+scale_amount_min = 1.5
+scale_amount_max = 4.0
+color = Color(0.8, 0.75, 0.65, 0.5)
+
+[node name="TrailParticles" type="CPUParticles2D" parent="Player"]
+emitting = false
+amount = 20
+lifetime = 0.5
+direction = Vector2(0, 0)
+spread = 360.0
+initial_velocity_min = 3.0
+initial_velocity_max = 12.0
+gravity = Vector2(0, 0)
+scale_amount_min = 1.0
+scale_amount_max = 2.0
+color = Color(1, 0.95, 0.85, 0.15)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(600, 400)
 script = ExtResource("3_camera")
 target = NodePath("../Player")
-smooth_speed = 3.0
-
-[node name="Platform1" type="StaticBody2D" parent="."]
-position = Vector2(200, 350)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
-shape = SubResource("RectangleShape2D_platform1")
-
-[node name="Visual" type="ColorRect" parent="Platform1"]
-offset_left = -125.0
-offset_top = -10.0
-offset_right = 125.0
-offset_bottom = 10.0
-color = Color(0.5, 0.55, 0.65, 1)
-
-[node name="Platform2" type="StaticBody2D" parent="."]
-position = Vector2(550, 450)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
-shape = SubResource("RectangleShape2D_platform2")
-
-[node name="Visual" type="ColorRect" parent="Platform2"]
-offset_left = -150.0
-offset_top = -10.0
-offset_right = 150.0
-offset_bottom = 10.0
-color = Color(0.5, 0.55, 0.65, 1)
-
-[node name="Platform3" type="StaticBody2D" parent="."]
-position = Vector2(900, 530)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform3"]
-shape = SubResource("RectangleShape2D_platform3")
-
-[node name="Visual" type="ColorRect" parent="Platform3"]
-offset_left = -140.0
-offset_top = -10.0
-offset_right = 140.0
-offset_bottom = 10.0
-color = Color(0.5, 0.55, 0.65, 1)
-
-[node name="Goal" type="Area2D" parent="."]
-position = Vector2(1050, 490)
-script = ExtResource("2_goal")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Goal"]
-shape = SubResource("RectangleShape2D_goal")
-
-[node name="ColorRect" type="ColorRect" parent="Goal"]
-offset_left = -25.0
-offset_top = -25.0
-offset_right = 25.0
-offset_bottom = 25.0
-color = Color(0.4, 0.85, 0.5, 0.8)
+smooth_speed = 3.5
+look_ahead = 0.1
 
 [node name="Floor" type="StaticBody2D" parent="."]
 position = Vector2(600, 790)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
-shape = SubResource("RectangleShape2D_floor")
+shape = SubResource("rect_floor")
 
 [node name="Visual" type="ColorRect" parent="Floor"]
-offset_left = -600.0
+offset_left = -700.0
 offset_top = -10.0
-offset_right = 600.0
+offset_right = 700.0
 offset_bottom = 10.0
-color = Color(0.3, 0.32, 0.38, 1)
+color = Color(0.25, 0.27, 0.32, 1)
+
+[node name="TopEdge" type="ColorRect" parent="Floor"]
+offset_left = -700.0
+offset_top = -12.0
+offset_right = 700.0
+offset_bottom = -10.0
+color = Color(0.4, 0.42, 0.5, 0.6)
 
 [node name="WallLeft" type="StaticBody2D" parent="."]
 position = Vector2(-10, 400)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallLeft"]
-shape = SubResource("RectangleShape2D_wall_left")
+shape = SubResource("rect_wall_l")
 
 [node name="WallRight" type="StaticBody2D" parent="."]
 position = Vector2(1210, 400)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="WallRight"]
-shape = SubResource("RectangleShape2D_wall_right")
+shape = SubResource("rect_wall_r")
+
+[node name="Platform1" type="StaticBody2D" parent="."]
+position = Vector2(180, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
+shape = SubResource("rect_p1")
+
+[node name="Visual" type="ColorRect" parent="Platform1"]
+offset_left = -140.0
+offset_top = -9.0
+offset_right = 140.0
+offset_bottom = 9.0
+color = Color(0.38, 0.42, 0.52, 1)
+
+[node name="TopEdge" type="ColorRect" parent="Platform1"]
+offset_left = -140.0
+offset_top = -11.0
+offset_right = 140.0
+offset_bottom = -9.0
+color = Color(0.55, 0.6, 0.72, 0.7)
+
+[node name="Platform2" type="StaticBody2D" parent="."]
+position = Vector2(460, 250)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
+shape = SubResource("rect_p2")
+
+[node name="Visual" type="ColorRect" parent="Platform2"]
+offset_left = -100.0
+offset_top = -9.0
+offset_right = 100.0
+offset_bottom = 9.0
+color = Color(0.38, 0.42, 0.52, 1)
+
+[node name="TopEdge" type="ColorRect" parent="Platform2"]
+offset_left = -100.0
+offset_top = -11.0
+offset_right = 100.0
+offset_bottom = -9.0
+color = Color(0.55, 0.6, 0.72, 0.7)
+
+[node name="Platform3" type="StaticBody2D" parent="."]
+position = Vector2(550, 500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform3"]
+shape = SubResource("rect_p3")
+
+[node name="Visual" type="ColorRect" parent="Platform3"]
+offset_left = -160.0
+offset_top = -9.0
+offset_right = 160.0
+offset_bottom = 9.0
+color = Color(0.38, 0.42, 0.52, 1)
+
+[node name="TopEdge" type="ColorRect" parent="Platform3"]
+offset_left = -160.0
+offset_top = -11.0
+offset_right = 160.0
+offset_bottom = -9.0
+color = Color(0.55, 0.6, 0.72, 0.7)
+
+[node name="Platform4" type="StaticBody2D" parent="."]
+position = Vector2(830, 380)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform4"]
+shape = SubResource("rect_p4")
+
+[node name="Visual" type="ColorRect" parent="Platform4"]
+offset_left = -110.0
+offset_top = -9.0
+offset_right = 110.0
+offset_bottom = 9.0
+color = Color(0.38, 0.42, 0.52, 1)
+
+[node name="TopEdge" type="ColorRect" parent="Platform4"]
+offset_left = -110.0
+offset_top = -11.0
+offset_right = 110.0
+offset_bottom = -9.0
+color = Color(0.55, 0.6, 0.72, 0.7)
+
+[node name="Platform5" type="StaticBody2D" parent="."]
+position = Vector2(1030, 530)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform5"]
+shape = SubResource("rect_p5")
+
+[node name="Visual" type="ColorRect" parent="Platform5"]
+offset_left = -90.0
+offset_top = -9.0
+offset_right = 90.0
+offset_bottom = 9.0
+color = Color(0.38, 0.42, 0.52, 1)
+
+[node name="TopEdge" type="ColorRect" parent="Platform5"]
+offset_left = -90.0
+offset_top = -11.0
+offset_right = 90.0
+offset_bottom = -9.0
+color = Color(0.55, 0.6, 0.72, 0.7)
+
+[node name="DecoPlatform1" type="ColorRect" parent="."]
+offset_left = 300.0
+offset_top = 650.0
+offset_right = 420.0
+offset_bottom = 654.0
+color = Color(0.3, 0.33, 0.4, 0.25)
+
+[node name="DecoPlatform2" type="ColorRect" parent="."]
+offset_left = 700.0
+offset_top = 600.0
+offset_right = 790.0
+offset_bottom = 604.0
+color = Color(0.3, 0.33, 0.4, 0.2)
+
+[node name="DecoPlatform3" type="ColorRect" parent="."]
+offset_left = 150.0
+offset_top = 550.0
+offset_right = 220.0
+offset_bottom = 553.0
+color = Color(0.3, 0.33, 0.4, 0.15)
+
+[node name="Goal" type="Area2D" parent="."]
+position = Vector2(1060, 490)
+script = ExtResource("2_goal")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Goal"]
+shape = SubResource("circle_goal")
+
+[node name="GoalParticles" type="CPUParticles2D" parent="Goal"]
+emitting = false
+amount = 30
+one_shot = true
+explosiveness = 1.0
+lifetime = 0.8
+direction = Vector2(0, 0)
+spread = 180.0
+initial_velocity_min = 60.0
+initial_velocity_max = 200.0
+gravity = Vector2(0, 50)
+scale_amount_min = 2.0
+scale_amount_max = 6.0
+color = Color(0.4, 0.95, 0.55, 0.7)
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ShotCounter" type="Label" parent="UI"]
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 220.0
+offset_bottom = 50.0
+theme_override_colors/font_color = Color(0.85, 0.82, 0.72, 0.75)
+theme_override_font_sizes/font_size = 20
+text = "Shots: 0"
+
+[node name="RestartHint" type="Label" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -180.0
+offset_top = 18.0
+offset_right = -24.0
+offset_bottom = 45.0
+theme_override_colors/font_color = Color(0.7, 0.68, 0.6, 0.4)
+theme_override_font_sizes/font_size = 14
+text = "R - Restart"
+horizontal_alignment = 2
 
 [node name="HintLabel" type="Label" parent="UI"]
 anchors_preset = 7
@@ -152,9 +353,34 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -60.0
-offset_right = 150.0
-offset_bottom = -20.0
+offset_left = -200.0
+offset_top = -55.0
+offset_right = 200.0
+offset_bottom = -22.0
+theme_override_colors/font_color = Color(0.8, 0.78, 0.7, 0.8)
+theme_override_font_sizes/font_size = 15
 text = "Click near the ball and drag to aim. Release to launch."
 horizontal_alignment = 1
+
+[node name="LevelComplete" type="ColorRect" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.04, 0.06, 0.1, 0.88)
+visible = false
+
+[node name="CompletionLabel" type="Label" parent="UI/LevelComplete"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -80.0
+offset_right = 220.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_font_sizes/font_size = 26
+text = "Level Complete!"
+horizontal_alignment = 1
+vertical_alignment = 1

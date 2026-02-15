@@ -1,90 +1,290 @@
 extends RigidBody2D
 
-## Pull-and-shoot ball controller.
+## Polished pull-and-shoot ball controller with full animation system.
 ## Click near the ball, drag to aim, release to launch.
+## Includes: squash/stretch, trail, trajectory preview, power ring, particles.
 
-@export var max_power: float = 1000.0
-@export var drag_radius: float = 100.0
+@export_group("Power")
+@export var max_power: float = 1200.0
+@export var drag_radius: float = 120.0
 
-@onready var trajectory_line: Line2D = $TrajectoryLine
-@onready var sprite: Sprite2D = $Sprite2D
+@export_group("Ball Appearance")
+@export var ball_radius: float = 20.0
+@export var ball_color: Color = Color(0.95, 0.88, 0.72)
+@export var highlight_color: Color = Color(1.0, 0.97, 0.92)
+@export var outline_color: Color = Color(0.6, 0.52, 0.38)
 
+# --- State ---
 var is_dragging: bool = false
 var drag_start: Vector2 = Vector2.ZERO
 var drag_current: Vector2 = Vector2.ZERO
+var shot_count: int = 0
 
-# Minimum velocity to consider the ball "stopped"
-const REST_THRESHOLD: float = 15.0
+# --- Animation ---
+var _squash: Vector2 = Vector2.ONE
+var _idle_time: float = 0.0
+var _flash: float = 0.0
+var _prev_speed: float = 0.0
+
+# --- Trail ---
+const TRAIL_LENGTH: int = 40
+const TRAIL_MIN_DIST: float = 4.0
+const REST_THRESHOLD: float = 12.0
+
+# --- Signals ---
+signal shot_fired(count: int)
+signal impact_occurred(strength: float)
 
 
 func _ready() -> void:
-	trajectory_line.visible = false
-	# Set physics material
+	lock_rotation = true
 	physics_material_override = PhysicsMaterial.new()
 	physics_material_override.bounce = 0.6
 	physics_material_override.friction = 0.3
 	continuous_cd = RigidBody2D.CCD_MODE_CAST_RAY
+	contact_monitor = true
+	max_contacts_reported = 4
+	body_entered.connect(_on_collision)
+
+
+func _process(delta: float) -> void:
+	# Idle pulse timer
+	if _is_resting() and not is_dragging:
+		_idle_time += delta
+	else:
+		_idle_time = 0.0
+
+	# Decay flash
+	_flash = move_toward(_flash, 0.0, delta * 4.0)
+
+	# Lerp squash back to normal
+	_squash = _squash.lerp(Vector2.ONE, delta * 12.0)
+
+	# Update trail
+	_update_trail()
+
+	# Trail particles follow speed
+	var trail_p = get_node_or_null("TrailParticles") as CPUParticles2D
+	if trail_p:
+		trail_p.emitting = linear_velocity.length() > 60.0
+
+	_prev_speed = linear_velocity.length()
+	queue_redraw()
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT:
-			if event.pressed:
-				_on_mouse_pressed(event.global_position)
-			else:
-				_on_mouse_released()
-	
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			_start_drag(event.global_position)
+		else:
+			_end_drag()
 	elif event is InputEventMouseMotion and is_dragging:
 		drag_current = event.global_position
-		_update_trajectory()
 
 
-func _on_mouse_pressed(mouse_pos: Vector2) -> void:
-	# Only start drag if clicking near the ball
-	if global_position.distance_to(mouse_pos) <= drag_radius and _is_ball_resting():
-		is_dragging = true
-		drag_start = mouse_pos
-		drag_current = mouse_pos
-		freeze = true
-		trajectory_line.visible = true
+# ===========================================================================
+#  DRAWING
+# ===========================================================================
+
+func _draw() -> void:
+	# Trajectory and power ring drawn behind the ball
+	if is_dragging:
+		_draw_trajectory()
+		_draw_power_ring()
+		_draw_aim_line()
+
+	# --- Ball with squash/stretch ---
+	draw_set_transform(Vector2.ZERO, 0.0, _squash)
+
+	# Drop shadow
+	draw_circle(Vector2(3, 4), ball_radius, Color(0, 0, 0, 0.12))
+
+	# Outline
+	draw_circle(Vector2.ZERO, ball_radius + 1.5, outline_color)
+
+	# Main body
+	draw_circle(Vector2.ZERO, ball_radius, ball_color)
+
+	# Inner highlight (upper-left)
+	draw_circle(Vector2(-3, -4), ball_radius * 0.55, highlight_color)
+
+	# Specular dot
+	draw_circle(Vector2(-6, -8), ball_radius * 0.2, Color(1, 1, 1, 0.55))
+
+	# Idle glow pulse
+	if _idle_time > 0.3 and _is_resting():
+		var pulse := (sin(_idle_time * 3.0) + 1.0) * 0.5
+		draw_circle(
+			Vector2.ZERO,
+			ball_radius + 5.0 + pulse * 5.0,
+			Color(1, 0.95, 0.85, pulse * 0.12)
+		)
+
+	# Impact / launch flash
+	if _flash > 0:
+		draw_circle(Vector2.ZERO, ball_radius + 3.0, Color(1, 1, 1, _flash * 0.4))
+
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
-func _on_mouse_released() -> void:
+func _draw_trajectory() -> void:
+	var drag_vec := drag_start - drag_current
+	var power := clampf(drag_vec.length(), 0.0, max_power)
+	if power < 10.0:
+		return
+
+	var dir := drag_vec.normalized()
+	var vel := dir * power
+	var grav := Vector2(0, ProjectSettings.get_setting(
+		"physics/2d/default_gravity", 980.0))
+
+	# Draw physics-accurate parabolic dots
+	for i in range(1, 32):
+		var t := i * 0.035
+		var pos := vel * t + 0.5 * grav * t * t
+		var alpha := (1.0 - float(i) / 32.0) * 0.45
+		var sz := 2.8 * (1.0 - float(i) / 32.0 * 0.5)
+		draw_circle(pos, sz, Color(1, 1, 1, alpha))
+
+
+func _draw_aim_line() -> void:
+	var drag_vec := drag_start - drag_current
+	var power := clampf(drag_vec.length(), 0.0, max_power)
+	if power < 10.0:
+		return
+	var dir := drag_vec.normalized()
+	# Short solid aim line from ball center
+	var line_len := clampf(power * 0.08, 10.0, 60.0)
+	draw_line(Vector2.ZERO, dir * line_len, Color(1, 1, 1, 0.5), 2.0, true)
+
+
+func _draw_power_ring() -> void:
+	var drag_vec := drag_start - drag_current
+	var power := clampf(drag_vec.length(), 0.0, max_power)
+	var ratio := power / max_power
+	if ratio < 0.02:
+		return
+
+	# Color ramp: green → yellow → red
+	var col: Color
+	if ratio < 0.5:
+		col = Color(0.3, 0.9, 0.4).lerp(Color(1.0, 0.9, 0.2), ratio * 2.0)
+	else:
+		col = Color(1.0, 0.9, 0.2).lerp(Color(1.0, 0.3, 0.2), (ratio - 0.5) * 2.0)
+	col.a = 0.65
+
+	var arc := ratio * TAU
+	var r := ball_radius + 11.0
+	var segs := int(36 * ratio) + 2
+	var prev := Vector2(cos(-PI / 2.0), sin(-PI / 2.0)) * r
+	for i in range(1, segs):
+		var angle := -PI / 2.0 + arc * float(i) / float(segs - 1)
+		var next := Vector2(cos(angle), sin(angle)) * r
+		draw_line(prev, next, col, 2.5, true)
+		prev = next
+
+	# Tick marks at 25%, 50%, 75%
+	for pct in [0.25, 0.5, 0.75]:
+		if ratio >= pct:
+			var a := -PI / 2.0 + pct * TAU
+			var p1 := Vector2(cos(a), sin(a)) * (r - 3.0)
+			var p2 := Vector2(cos(a), sin(a)) * (r + 3.0)
+			draw_line(p1, p2, Color(1, 1, 1, 0.4), 1.5)
+
+
+# ===========================================================================
+#  DRAG MECHANICS
+# ===========================================================================
+
+func _start_drag(mpos: Vector2) -> void:
+	if global_position.distance_to(mpos) > drag_radius or not _is_resting():
+		return
+	is_dragging = true
+	drag_start = mpos
+	drag_current = mpos
+	freeze = true
+	# Grab squash
+	_squash = Vector2(1.1, 0.9)
+
+
+func _end_drag() -> void:
 	if not is_dragging:
 		return
-	
 	is_dragging = false
 	freeze = false
-	trajectory_line.visible = false
-	
-	# Calculate launch direction and power
-	var drag_vector: Vector2 = drag_start - drag_current
-	var power: float = clampf(drag_vector.length(), 0.0, max_power)
-	var direction: Vector2 = drag_vector.normalized()
-	
-	apply_central_impulse(direction * power)
 
+	var drag_vec := drag_start - drag_current
+	var power := clampf(drag_vec.length(), 0.0, max_power)
+	var dir := drag_vec.normalized()
 
-func _update_trajectory() -> void:
-	if not is_dragging:
+	if power < 10.0:
 		return
-	
-	var drag_vector: Vector2 = drag_start - drag_current
-	var power: float = clampf(drag_vector.length(), 0.0, max_power)
-	var direction: Vector2 = drag_vector.normalized()
-	
-	# Draw a dashed trajectory preview
-	var points: PackedVector2Array = PackedVector2Array()
-	var num_points: int = 20
-	var step_length: float = power / max_power * 15.0  # Scale line length with power
-	
-	for i in range(num_points):
-		var t: float = float(i) / float(num_points)
-		# Only show every other segment for dashed effect
-		points.append(direction * step_length * i * 5.0)
-	
-	trajectory_line.points = points
+
+	apply_central_impulse(dir * power)
+	shot_count += 1
+	shot_fired.emit(shot_count)
+
+	# Launch squash
+	_squash = Vector2(0.7, 1.35)
+	_flash = 0.7
+
+	# Launch particles burst
+	var lp = get_node_or_null("LaunchParticles") as CPUParticles2D
+	if lp:
+		lp.direction = dir
+		lp.restart()
+		lp.emitting = true
 
 
-func _is_ball_resting() -> bool:
+# ===========================================================================
+#  TRAIL
+# ===========================================================================
+
+func _update_trail() -> void:
+	var trail := get_node_or_null("Trail") as Line2D
+	if not trail:
+		return
+
+	if linear_velocity.length() > 25.0:
+		var gp := global_position
+		if trail.get_point_count() == 0 or \
+				gp.distance_to(trail.get_point_position(0)) > TRAIL_MIN_DIST:
+			trail.add_point(gp, 0)
+
+	while trail.get_point_count() > TRAIL_LENGTH:
+		trail.remove_point(trail.get_point_count() - 1)
+
+	# Fade out trail when resting
+	if _is_resting() and trail.get_point_count() > 0:
+		trail.remove_point(trail.get_point_count() - 1)
+
+
+# ===========================================================================
+#  COLLISION
+# ===========================================================================
+
+func _on_collision(body: Node) -> void:
+	if _prev_speed < 80.0:
+		return
+
+	# Direction-aware squash
+	var vel := linear_velocity.normalized()
+	var strength := clampf(_prev_speed / 500.0, 0.2, 1.0)
+	if abs(vel.y) > abs(vel.x):
+		_squash = Vector2.ONE.lerp(Vector2(1.3, 0.75), strength)
+	else:
+		_squash = Vector2.ONE.lerp(Vector2(0.75, 1.3), strength)
+
+	_flash = clampf(_prev_speed / 600.0, 0.15, 0.8)
+
+	# Impact particles
+	var ip = get_node_or_null("ImpactParticles") as CPUParticles2D
+	if ip:
+		ip.restart()
+		ip.emitting = true
+
+	impact_occurred.emit(_prev_speed)
+
+
+func _is_resting() -> bool:
 	return linear_velocity.length() < REST_THRESHOLD or freeze
