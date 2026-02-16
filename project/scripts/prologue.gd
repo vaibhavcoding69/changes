@@ -20,7 +20,7 @@ func _ready() -> void:
 	player.shot_count = 0
 	
 	# Animate entrance
-	var tw = create_tween()
+	var tw: Tween = create_tween()
 	tw.set_parallel(true)
 	tw.tween_property($ColorRect, "color:a", 0.0, 0.0)  # Background already visible
 	tw.tween_property(hint_label, "modulate:a", 1.0, 1.5).set_delay(1.0)
@@ -42,12 +42,12 @@ func _on_goal_area_entered(body: Node2D) -> void:
 		_on_companion_reached()
 
 
-func _on_companion_reached() -> void:
+	func _on_companion_reached() -> void:
 	hint_label.text = "You found them..."
 	hint_label.modulate.a = 1.0
 	
 	# Animate companion glow
-	var tw = create_tween()
+	var tw: Tween = create_tween()
 	tw.tween_property(companion, "modulate", Color(1.0, 1.0, 1.0, 1.0), 1.0)
 	tw.tween_callback(func():
 		# Brief pause then transition
@@ -65,7 +65,7 @@ func _transition_to_act1() -> void:
 		var narrator = $UI/NarratorText
 		narrator.visible = true
 		narrator.modulate.a = 0.0
-		var tw2 = create_tween()
+			var tw2: Tween = create_tween()
 		tw2.tween_property(narrator, "modulate:a", 1.0, 1.5)
 		tw2.tween_callback(func():
 			await get_tree().create_timer(3.0).timeout

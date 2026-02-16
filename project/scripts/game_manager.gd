@@ -23,7 +23,7 @@ func _ready() -> void:
 	# Animate hint label entrance
 	if hint_label:
 		hint_label.modulate.a = 0.0
-		var tw := create_tween()
+		var tw: Tween = create_tween()
 		tw.tween_property(hint_label, "modulate:a", 0.8, 1.2).set_delay(0.5)
 
 
@@ -45,7 +45,7 @@ func _on_shot(count: int) -> void:
 	GameState.add_shots(1)
 	# Fade out hint after first shot
 	if count == 1 and hint_label:
-		var tw := create_tween()
+		var tw: Tween = create_tween()
 		tw.tween_property(hint_label, "modulate:a", 0.0, 1.5)
 
 
@@ -54,7 +54,7 @@ func _on_goal() -> void:
 	if complete_panel:
 		complete_panel.visible = true
 		complete_panel.modulate.a = 0.0
-		var tw := create_tween()
+		var tw: Tween = create_tween()
 		tw.tween_property(complete_panel, "modulate:a", 1.0, 0.5) \
 			.set_ease(Tween.EASE_OUT)
 	if complete_label:
@@ -82,7 +82,7 @@ func _get_rating(shots: int) -> String:
 func _restart_level() -> void:
 	_restart_cooldown = 0.5
 	# Brief fade-out before restart
-	var overlay := ColorRect.new()
+	var overlay: ColorRect = ColorRect.new()
 	overlay.color = Color(0, 0, 0, 0)
 	overlay.anchors_preset = 15  # Full rect
 	overlay.anchor_right = 1.0
@@ -90,7 +90,7 @@ func _restart_level() -> void:
 	$UI.add_child(overlay)
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var tw := create_tween()
+	var tw: Tween = create_tween()
 	tw.tween_property(overlay, "color:a", 1.0, 0.2)
 	tw.tween_callback(get_tree().reload_current_scene)
 

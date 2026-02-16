@@ -186,9 +186,9 @@ func _draw_power_ring() -> void:
 	# Tick marks at 25%, 50%, 75%
 	for pct in [0.25, 0.5, 0.75]:
 		if ratio >= pct:
-			var a := -PI / 2.0 + pct * TAU
-			var p1 := Vector2(cos(a), sin(a)) * (r - 3.0)
-			var p2 := Vector2(cos(a), sin(a)) * (r + 3.0)
+			var a: float = -PI / 2.0 + pct * TAU
+			var p1: Vector2 = Vector2(cos(a), sin(a)) * (r - 3.0)
+			var p2: Vector2 = Vector2(cos(a), sin(a)) * (r + 3.0)
 			draw_line(p1, p2, Color(1, 1, 1, 0.4), 1.5)
 
 
