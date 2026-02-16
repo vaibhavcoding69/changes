@@ -127,6 +127,7 @@ Ball physics change per act:
 - [x] 4th wall trick implementations
 - [x] Shader suite (glitch, desaturate, invert)
 - [x] Level template system
+- [x] Pause screen (ESC key)
 
 ### 🚧 Next Steps
 - [ ] Create 14 level scenes
@@ -134,7 +135,7 @@ Ball physics change per act:
 - [ ] Integrate narrator dialogue
 - [ ] Add memory fragment collectibles
 - [ ] Background music (5 tracks)
-- [ ] Main menu and pause screens
+- [ ] Main menu
 - [ ] Export builds for testing
 
 ---

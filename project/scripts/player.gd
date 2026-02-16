@@ -5,8 +5,9 @@ extends RigidBody2D
 ## Includes: squash/stretch, trail, trajectory preview, power ring, particles.
 
 @export_group("Power")
-@export var max_power: float = 1200.0
-@export var drag_radius: float = 120.0
+@export var max_power: float = 1600.0
+@export var drag_radius: float = 100.0
+@export var drag_sensitivity: float = 1.5
 
 @export_group("Ball Appearance")
 @export var ball_radius: float = 20.0
@@ -129,7 +130,7 @@ func _draw() -> void:
 
 func _draw_trajectory() -> void:
 	var drag_vec := drag_start - drag_current
-	var power := clampf(drag_vec.length(), 0.0, max_power)
+	var power := clampf(drag_vec.length() * drag_sensitivity, 0.0, max_power)
 	if power < 10.0:
 		return
 
@@ -149,7 +150,7 @@ func _draw_trajectory() -> void:
 
 func _draw_aim_line() -> void:
 	var drag_vec := drag_start - drag_current
-	var power := clampf(drag_vec.length(), 0.0, max_power)
+	var power := clampf(drag_vec.length() * drag_sensitivity, 0.0, max_power)
 	if power < 10.0:
 		return
 	var dir := drag_vec.normalized()
@@ -160,7 +161,7 @@ func _draw_aim_line() -> void:
 
 func _draw_power_ring() -> void:
 	var drag_vec := drag_start - drag_current
-	var power := clampf(drag_vec.length(), 0.0, max_power)
+	var power := clampf(drag_vec.length() * drag_sensitivity, 0.0, max_power)
 	var ratio := power / max_power
 	if ratio < 0.02:
 		return
@@ -214,7 +215,7 @@ func _end_drag() -> void:
 	freeze = false
 
 	var drag_vec := drag_start - drag_current
-	var power := clampf(drag_vec.length(), 0.0, max_power)
+	var power := clampf(drag_vec.length() * drag_sensitivity, 0.0, max_power)
 	var dir := drag_vec.normalized()
 
 	if power < 10.0:

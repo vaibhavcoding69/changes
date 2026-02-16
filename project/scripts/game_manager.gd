@@ -1,6 +1,7 @@
 extends Node2D
 
 ## Level manager — handles UI updates, shot tracking, level completion, and restart.
+## NOTE: Pause functionality handled by PauseMenu node (ESC key to pause)
 
 @onready var player: RigidBody2D = $Player
 @onready var goal: Area2D = $Goal
@@ -8,6 +9,7 @@ extends Node2D
 @onready var hint_label: Label = $UI/HintLabel
 @onready var complete_panel: ColorRect = $UI/LevelComplete
 @onready var complete_label: Label = $UI/LevelComplete/CompletionLabel
+@onready var pause_menu: Control = $UI/PauseMenu
 
 var level_complete: bool = false
 var _restart_cooldown: float = 0.0
