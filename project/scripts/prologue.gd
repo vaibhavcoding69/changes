@@ -42,7 +42,7 @@ func _on_goal_area_entered(body: Node2D) -> void:
 		_on_companion_reached()
 
 
-	func _on_companion_reached() -> void:
+func _on_companion_reached() -> void:
 	hint_label.text = "You found them..."
 	hint_label.modulate.a = 1.0
 	
@@ -58,14 +58,14 @@ func _on_goal_area_entered(body: Node2D) -> void:
 
 func _transition_to_act1() -> void:
 	# Fade to black
-	var tw = create_tween()
+	var tw: Tween = create_tween()
 	tw.tween_property($ColorRect, "color:a", 1.0, 2.0)
 	tw.tween_callback(func():
 		# Show final text
 		var narrator = $UI/NarratorText
 		narrator.visible = true
 		narrator.modulate.a = 0.0
-			var tw2: Tween = create_tween()
+		var tw2: Tween = create_tween()
 		tw2.tween_property(narrator, "modulate:a", 1.0, 1.5)
 		tw2.tween_callback(func():
 			await get_tree().create_timer(3.0).timeout

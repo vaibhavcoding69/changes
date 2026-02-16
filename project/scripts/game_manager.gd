@@ -97,7 +97,7 @@ func _restart_level() -> void:
 
 func _next_level() -> void:
 	_restart_cooldown = 0.5
-	var overlay := ColorRect.new()
+	var overlay: ColorRect = ColorRect.new()
 	overlay.color = Color(0, 0, 0, 0)
 	overlay.anchors_preset = 15
 	overlay.anchor_right = 1.0
@@ -105,7 +105,7 @@ func _next_level() -> void:
 	$UI.add_child(overlay)
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var tw := create_tween()
+	var tw: Tween = create_tween()
 	tw.tween_property(overlay, "color:a", 1.0, 0.3)
 	tw.tween_callback(func():
 		LevelManager.load_next_level()
