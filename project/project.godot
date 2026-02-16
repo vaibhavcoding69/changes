@@ -7,8 +7,13 @@ config_version=5
 [application]
 
 config/name="Changes"
-run/main_scene="res://scenes/levels/level_1.tscn"
+run/main_scene="res://scenes/prologue.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
+
+[autoload]
+
+GameState="*res://scripts/game_state.gd"
+LevelManager="*res://scripts/level_manager.gd"
 
 [display]
 

@@ -36,10 +36,13 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_R and _restart_cooldown <= 0:
 			_restart_level()
+		elif event.keycode == KEY_ENTER and level_complete:
+			_next_level()
 
 
 func _on_shot(count: int) -> void:
 	_update_shots(count)
+	GameState.add_shots(1)
 	# Fade out hint after first shot
 	if count == 1 and hint_label:
 		var tw := create_tween()
@@ -56,7 +59,7 @@ func _on_goal() -> void:
 			.set_ease(Tween.EASE_OUT)
 	if complete_label:
 		var rating := _get_rating(player.shot_count)
-		complete_label.text = "Level Complete!\n\nShots: %d\n%s\n\nPress R to restart" \
+		complete_label.text = "Level Complete!\n\nShots: %d\n%s\n\nPress ENTER for next level (R to restart)" \
 			% [player.shot_count, rating]
 
 
@@ -90,3 +93,21 @@ func _restart_level() -> void:
 	var tw := create_tween()
 	tw.tween_property(overlay, "color:a", 1.0, 0.2)
 	tw.tween_callback(get_tree().reload_current_scene)
+
+
+func _next_level() -> void:
+	_restart_cooldown = 0.5
+	var overlay := ColorRect.new()
+	overlay.color = Color(0, 0, 0, 0)
+	overlay.anchors_preset = 15
+	overlay.anchor_right = 1.0
+	overlay.anchor_bottom = 1.0
+	$UI.add_child(overlay)
+	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var tw := create_tween()
+	tw.tween_property(overlay, "color:a", 1.0, 0.3)
+	tw.tween_callback(func():
+		LevelManager.load_next_level()
+	)
+
