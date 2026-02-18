@@ -1,7 +1,7 @@
 extends Node2D
 
 ## Level manager — handles UI updates, shot tracking, level completion, and restart.
-## NOTE: Pause functionality handled by PauseMenu node (ESC key to pause)
+## Tracks star ratings based on shot count. Pause via PauseMenu node (ESC key).
 
 @onready var player: RigidBody2D = $Player
 @onready var goal: Area2D = $Goal

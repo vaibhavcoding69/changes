@@ -104,9 +104,10 @@ position = Vector2(640, 600)
 
 3. **Controls**:
    - Click near ball to grab
-   - Drag to aim (white line shows trajectory)
+   - Drag to aim (dotted line shows trajectory)
    - Release to shoot
    - Press **R** to restart level
+   - Press **ESC** to pause
 
 ## Adding Assets
 
@@ -144,71 +145,36 @@ wget https://github.com/google/fonts/raw/main/apache/robotomono/RobotoMono-Regul
 
 ## Autoload System
 
-The game uses 4 autoloads (singletons) that are always available:
+The game uses 2 autoloads (singletons) that are always available:
 
 | Autoload | Purpose | Example Usage |
 |----------|---------|---------------|
-| **LevelManager** | Level progression | `LevelManager.next_level()` |
-| **Narrator** | Show dialogue | `Narrator.show_text("Hello", 3.0)` |
-| **FourthWall** | 4th wall tricks | `FourthWall.shake_window()` |
-| **DeathTracker** | Track deaths | `DeathTracker.on_death()` |
+| **LevelManager** | Level progression | `LevelManager.load_next_level()` |
+| **GameState** | Track progress | `GameState.current_world` |
 
 These are configured in `project.godot` and load automatically.
-
-## Testing 4th Wall Features
-
-### Test Window Manipulation:
-```gdscript
-# Add to any script's _ready():
-await get_tree().create_timer(2.0).timeout
-FourthWall.shake_window(1.0, 20.0)
-```
-
-### Test Cursor Tricks:
-```gdscript
-FourthWall.stutter_cursor(2.0)
-await get_tree().create_timer(3.0).timeout
-FourthWall.hide_cursor(3.0)
-```
-
-### Test Username Read:
-```gdscript
-var username = FourthWall.get_username()
-Narrator.show_text("Hello, %s" % username, 3.0)
-```
-
-### Test Death Scare:
-```gdscript
-# Manually trigger (for testing):
-DeathTracker.total_deaths = 10
-DeathTracker.trigger_death_scare()
-```
 
 ## Next Steps
 
 ### Phase 1: Core Gameplay
 - [x] Ball pull-shoot mechanic works
 - [ ] Create 3 test levels to verify physics feel
-- [ ] Tune power/mass parameters per emotional act
+- [ ] Tune power/mass parameters
 - [ ] Add ball sprite and platform visuals
 
 ### Phase 2: Level Design
-- [ ] Design and build all 14 levels (prologue + 12 + epilogue)
-- [ ] Add memory fragment collectibles
+- [ ] Design and build all 14 levels (tutorial + 12 levels + bonus)
+- [ ] Add collectible stars/coins
 - [ ] Implement goal zones with transitions
 
-### Phase 3: 4th Wall Integration
-- [ ] Test all window manipulation functions
-- [ ] Add anomaly triggers to level_manager.gd
-- [ ] Create fake crash screen overlay
-- [ ] Test death scare sequence
+### Phase 3: World Themes
+- [ ] Meadow world (green, gentle)
+- [ ] Volcano world (moving platforms, hazards)
+- [ ] Sky world (wind mechanics, floating islands)
+- [ ] Ocean world (currents, buoyancy)
+- [ ] Space world (low gravity)
 
-### Phase 4: Narrative
-- [ ] Write all narrator lines per level (see plans/narrative.md)
-- [ ] Implement memory fragment popup system
-- [ ] Add typewriter effect tuning
-
-### Phase 5: Polish
+### Phase 4: Polish
 - [ ] Download and integrate free audio
 - [ ] Add particles for collectibles
 - [ ] Create fade transitions between levels
@@ -222,26 +188,18 @@ DeathTracker.trigger_death_scare()
 - Check `project.godot` autoload section has correct paths
 
 ### "Ball doesn't shoot"
-- Check `ball.tscn` scene has correct script attached
-- Verify ball is in group "ball" (`add_to_group("ball")`)
+- Check scene has correct script attached
 - Check collision layers and masks
 
-### Window manipulation doesn't work
-- **Linux**: Depends on window manager (works on X11, limited on Wayland)
-- **Flatpak**: May have sandboxing restrictions
-- Test with native Godot build instead of Flatpak
-
-### Cursor warp not working
-- **Wayland**: Not supported - use X11 session
-- **Fullscreen**: May not work - test in windowed mode
+### Window or fullscreen issues
+- Test in windowed mode first
+- Check project.godot display settings
 
 ## Documentation
 
 - **Full game design**: `/plans/game_design.md`
-- **Story & dialogue**: `/plans/narrative.md`
 - **Level layouts**: `/plans/level_design.md`
-- **4th wall catalog**: `/plans/fourth_wall_catalog.md`
-- **API reference**: See Godot docs for RigidBody2D, Area2D, DisplayServer
+- **API reference**: See Godot docs for RigidBody2D, Area2D
 
 ## Support
 
@@ -257,6 +215,6 @@ If you encounter issues:
 1. Open project in Godot: `godot project.godot`
 2. Create your first level scene
 3. Test the ball mechanic
-4. Build the emotional journey level by level
+4. Build levels world by world
 
-*"Change is the only constant. And I'm still here."*
+*Aim. Launch. Bounce. Repeat.*

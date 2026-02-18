@@ -1,6 +1,6 @@
 # Changes
 
-> *A 4th-wall-breaking ball physics game about grief, loss, and acceptance.*
+> *A satisfying pull-and-shoot ball physics puzzle game.*
 
 [![Godot Engine](https://img.shields.io/badge/Godot-4.2+-blue.svg)](https://godotengine.org/)
 [![License](https://img.shields.io/badge/license-Educational-green.svg)](LICENSE)
@@ -9,55 +9,41 @@
 
 ## Overview
 
-**Changes** is a cursor-controlled physics game where you navigate a ball through increasingly surreal levels while processing the death of a loved one. The game follows the 5 stages of grief, using heavy 4th-wall breaking as a metaphor for how grief intrudes on normal life.
+**Changes** is a cursor-controlled physics puzzle game where you launch a ball through creative obstacle courses. Master the pull-and-shoot mechanic, solve tricky level layouts, and aim for the fewest shots possible to earn a 3-star rating.
 
 ### Core Concept
 - **Mechanic**: Pull-and-shoot ball control (like pool/billiards)
-- **Theme**: Processing loss and learning to move forward
-- **Style**: Minimalist abstract geometry with emotional color grading
-- **Length**: 20-30 minutes (14 levels: prologue + 12 + epilogue)
+- **Theme**: Fun, colorful puzzle adventure
+- **Style**: Minimalist abstract geometry with vibrant colors
+- **Length**: 20-30 minutes (14 levels across 5 themed worlds)
 
-### Emotional Journey
-1. **Denial** → "They'll come back"
-2. **Anger** → "Why did this happen?!"
-3. **Bargaining** → "What if I could change it?"
-4. **Depression** → "I can't go on"
-5. **Acceptance** → "I'll carry them with me"
-
-### 4th Wall Breaking
-The game progressively breaks the 4th wall through:
-- Visual glitches and screen distortion
-- Window manipulation (shake, move, minimize)
-- Cursor tricks (stutter, hide, lock)
-- **Direct address** using your OS username
-- Fake error dialogs and crash screens
-- Death counter acknowledgment
+### Themed Worlds
+1. **Meadow** → Gentle rolling hills, easy introduction
+2. **Volcano** → Fiery obstacles, moving platforms
+3. **Sky** → Floating islands, wind mechanics
+4. **Ocean** → Underwater physics, currents
+5. **Space** → Low gravity, orbital puzzles
 
 ---
 
 ## 📦 What's In This Repository
 
-### `/plans` - Complete Design Documentation
-Four comprehensive design documents (~15,000 words):
-- **[game_design.md](plans/game_design.md)** - Full game concept, mechanics, architecture
-- **[narrative.md](plans/narrative.md)** - Story, narrator lines, memory texts
+### `/plans` - Design Documentation
+- **[game_design.md](plans/game_design.md)** - Game concept, mechanics, architecture
 - **[level_design.md](plans/level_design.md)** - Level layouts, puzzles, difficulty
-- **[fourth_wall_catalog.md](plans/fourth_wall_catalog.md)** - All meta tricks + code
 
 ### `/project` - Godot 4 Game Engine ✅ **FUNCTIONAL**
 Complete working base plate:
 - ✅ Ball pull-shoot mechanic (RigidBody2D physics)
 - ✅ Camera system with smooth follow and shake
-- ✅ Level manager with emotional state progression
-- ✅ Narrator system with typewriter effect
-- ✅ 4th wall manager (window, cursor, system tricks)
-- ✅ Death tracker with scare sequence
-- ✅ Shaders (glitch, desaturate, invert)
+- ✅ Level manager with world progression
+- ✅ Star rating system (based on shot count)
+- ✅ Satisfying ball animations (squash/stretch, trail, particles)
+- ✅ Goal zones with celebration effects
 
 ### Documentation
 - **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Complete overview of what was built
 - **[QUICKSTART.md](QUICKSTART.md)** - Setup and testing guide
-- **[project/README.md](project/README.md)** - In-depth project documentation
 
 ---
 
@@ -65,7 +51,7 @@ Complete working base plate:
 
 ### Prerequisites
 - **Godot 4.2+** ([Download](https://godotengine.org/download))
-- Linux/Windows/macOS (some 4th wall features vary by platform)
+- Linux/Windows/macOS
 
 ### Run the Project
 ```bash
@@ -97,71 +83,67 @@ godot project.godot
 5. Ball bounces realistically
 ```
 
-### Emotional State System
-Ball physics change per act:
-- **Denial**: Normal (mass=1.0, power=1000)
-- **Anger**: Overpowered (power=2000) - hard to control
-- **Bargaining**: Normal but glitchy
-- **Depression**: Heavy (mass=5.0) - hard to move
-- **Acceptance**: Balanced return
+### Star Rating System
+Earn stars based on how few shots you use:
+- ★★★ Perfect — 1 shot
+- ★★☆ Great — 2-3 shots
+- ★☆☆ Good — 4-5 shots
+- ☆☆☆ Keep trying — 6+ shots
 
-### 4th Wall Escalation
-| Level | Anomaly | Intensity |
-|-------|---------|-----------|
-| 1-3 | Subtle (cursor stutter, input delay) | 😌 Low |
-| 4-5 | Screen shake, fake errors | 😠 Medium |
-| 6-8 | Window drift, username reveal | 😰 High |
-| 9-10 | Window minimize, blackouts | 😔 Very High |
-| **Death Scare** | Window shake + fake crash + direct address | 😱 **EXTREME** |
+### World Variety
+| World | Theme | Twist |
+|-------|-------|-------|
+| 1 | Meadow | Gentle intro, learn mechanics |
+| 2 | Volcano | Moving platforms, lava hazards |
+| 3 | Sky | Floating islands, wind gusts |
+| 4 | Ocean | Underwater currents, buoyancy |
+| 5 | Space | Low gravity, orbital paths |
 
 ---
 
 ## 🛠️ Current Status
 
 ### ✅ Completed
-- [x] Complete design documentation (4 docs, 15k words)
+- [x] Complete design documentation
 - [x] Godot project structure
-- [x] Ball pull-shoot mechanic
-- [x] Camera controller with effects
-- [x] All autoload systems (LevelManager, Narrator, FourthWall, DeathTracker)
-- [x] 4th wall trick implementations
-- [x] Shader suite (glitch, desaturate, invert)
+- [x] Ball pull-shoot mechanic with animations
+- [x] Camera controller with smooth follow and impact shake
+- [x] Level manager with world progression
+- [x] Star rating system
+- [x] Goal zones with celebration particles
 - [x] Level template system
 - [x] Pause screen (ESC key)
+- [x] Title screen with level select
 
 ### 🚧 Next Steps
-- [ ] Create 14 level scenes
+- [ ] Create 14 level scenes across 5 worlds
 - [ ] Download free assets (Kenney.nl, Freesound)
-- [ ] Integrate narrator dialogue
-- [ ] Add memory fragment collectibles
-- [ ] Background music (5 tracks)
-- [ ] Main menu
+- [ ] Add world-specific obstacles (wind, lava, currents, low-gravity)
+- [ ] Background music (5 tracks, one per world)
+- [ ] Sound effects (bounce, launch, goal)
 - [ ] Export builds for testing
 
 ---
 
-## 📖 Story (No Spoilers)
+## 📖 About the Game
 
-You control a ball navigating abstract spaces. You started with someone - another ball - but they're gone. The game never says where they went. You wait. You rage. You bargain. You sink. You accept.
+You're a ball on a journey through colorful worlds. Each level is a physics puzzle — launch yourself toward the goal using as few shots as possible. The levels start simple but get creative fast: dodge moving platforms, ride wind currents, bounce off walls at just the right angle, and master tricky shots in low gravity.
 
-The game itself becomes aware of you - reading your name, moving windows, speaking directly. It's invasive, uncomfortable, just like grief.
+It's easy to pick up, hard to master, and satisfying every time you nail a perfect shot.
 
-By the end, you see them one last time - a ghost, a memory - and then they fade. You roll forward. Alone, but okay.
-
-> *"Change is the only constant. And I'm still here."*
+> *"One more try..."*
 
 ---
 
 ## 🎨 Visual Style (To Be Implemented)
 
 - **Minimalist geometry**: Circles, rectangles, simple shapes
-- **Emotional colors**:
-  - Warm gold (prologue)
-  - Blue-gray (denial)
-  - Red (anger)
-  - Purple glitch (bargaining)
-  - Grayscale (depression)
-  - Soft pastel (acceptance)
+- **Vibrant world colors**:
+  - Meadow: Lush greens and warm yellows
+  - Volcano: Deep reds and oranges
+  - Sky: Bright blues and whites
+  - Ocean: Teals and aquamarine
+  - Space: Deep purple and starlight
 - **Assets**: Use free libraries (Kenney.nl for sprites, Freesound for audio)
 
 ---
@@ -172,15 +154,13 @@ By the end, you see them one last time - a ghost, a memory - and then they fade.
 - **Engine**: Godot 4.2
 - **Language**: GDScript
 - **Physics**: RigidBody2D with custom pull-shoot input
-- **4th Wall**: DisplayServer API, OS introspection, shaders
 
 ### Platform Compatibility
 | Feature | Windows | macOS | Linux |
 |---------|---------|-------|-------|
 | Core gameplay | ✅ | ✅ | ✅ |
-| Window tricks | ✅ | ✅ | ⚠️ WM-dependent |
-| Cursor warp | ✅ | ✅ | ⚠️ X11 only |
-| Username read | ✅ | ✅ | ✅ |
+| Full physics | ✅ | ✅ | ✅ |
+| Particles | ✅ | ✅ | ✅ |
 
 ---
 
@@ -189,17 +169,14 @@ By the end, you see them one last time - a ghost, a memory - and then they fade.
 - **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - What was built and why
 - **[QUICKSTART.md](QUICKSTART.md)** - Setup guide and testing
 - **[plans/game_design.md](plans/game_design.md)** - Full design spec
-- **[plans/narrative.md](plans/narrative.md)** - Complete story script
 - **[plans/level_design.md](plans/level_design.md)** - Level layouts
-- **[plans/fourth_wall_catalog.md](plans/fourth_wall_catalog.md)** - All meta tricks
 
 ---
 
 ## 🙏 Credits
 
-**Game Design**: Based on collaborative planning  
-**Engine**: [Godot Engine](https://godotengine.org/)  
-**Inspired By**: Gris, That Dragon Cancer, The Stanley Parable, OneShot
+**Engine**: [Godot Engine](https://godotengine.org/)
+**Inspired By**: Angry Birds, Golf It!, Desert Golfing, Cut the Rope
 
 ### Asset Sources (To Be Used)
 - **Sprites**: [Kenney.nl](https://kenney.nl) (CC0)
@@ -217,11 +194,11 @@ Educational/personal project. External assets retain their original licenses.
 ## 🎯 Goals
 
 This project explores:
-- Game mechanics as emotional metaphor
-- 4th wall breaking as narrative device
 - Physics-based puzzle design
-- Minimalist storytelling
-- Processing grief through interactive media
+- Satisfying game feel (juice, polish, feedback)
+- Pull-and-shoot mechanics
+- Level design across themed worlds
+- Minimalist visual style
 
 ---
 
@@ -229,8 +206,6 @@ This project explores:
 
 **Want details?** See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) for complete breakdown.
 
-**Need help?** All design docs are in `/plans` with full implementation notes.
-
 ---
 
-*A game about loss, change, and carrying on.*
+*Aim. Launch. Bounce. Repeat.*

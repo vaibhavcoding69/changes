@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3 uid="uid://tutorial"]
+
+[ext_resource type="Script" path="res://scripts/level_template.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/goal.gd" id="2_goal"]
+
+[sub_resource type="CircleShape2D" id="circle_goal"]
+radius = 35.0
+
+[sub_resource type="RectangleShape2D" id="rect_platform"]
+size = Vector2(400, 20)
+
+[node name="Tutorial" type="Node2D"]
+script = ExtResource("1_level")
+level_number = 0
+world_number = 0
+
+[node name="BallSpawn" type="Marker2D" parent="."]
+position = Vector2(200, 400)
+
+[node name="GoalZone" type="Area2D" parent="."]
+position = Vector2(600, 400)
+script = ExtResource("2_goal")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalZone"]
+shape = SubResource("circle_goal")
+
+[node name="Platform" type="StaticBody2D" parent="."]
+position = Vector2(400, 500)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform"]
+shape = SubResource("rect_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform"]
+offset_left = -200.0
+offset_top = -10.0
+offset_right = 200.0
+offset_bottom = 10.0
+color = Color(0.3, 0.25, 0.2, 1)
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 800.0
+offset_bottom = 600.0
+color = Color(0.95, 0.9, 0.8, 1)

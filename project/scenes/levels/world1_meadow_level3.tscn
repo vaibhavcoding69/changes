@@ -1,0 +1,79 @@
+[gd_scene load_steps=9 format=3 uid="uid://level3"]
+
+[ext_resource type="Script" path="res://scripts/level_template.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/goal.gd" id="2_goal"]
+[ext_resource type="Script" path="res://scripts/moving_platform.gd" id="3_moving"]
+
+[sub_resource type="CircleShape2D" id="circle_goal"]
+radius = 35.0
+
+[sub_resource type="RectangleShape2D" id="rect_platform"]
+size = Vector2(200, 20)
+
+[sub_resource type="RectangleShape2D" id="rect_platform2"]
+size = Vector2(300, 20)
+
+[sub_resource type="RectangleShape2D" id="rect_moving"]
+size = Vector2(300, 20)
+
+[node name="World1MeadowLevel3" type="Node2D"]
+script = ExtResource("1_level")
+level_number = 3
+world_number = 1
+
+[node name="BallSpawn" type="Marker2D" parent="."]
+position = Vector2(100, 200)
+
+[node name="GoalZone" type="Area2D" parent="."]
+position = Vector2(1300, 600)
+script = ExtResource("2_goal")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalZone"]
+shape = SubResource("circle_goal")
+
+[node name="Platform1" type="StaticBody2D" parent="."]
+position = Vector2(300, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
+shape = SubResource("rect_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform1"]
+offset_left = -100.0
+offset_top = -10.0
+offset_right = 100.0
+offset_bottom = 10.0
+color = Color(0.2, 0.4, 0.1, 1)
+
+[node name="MovingPlatform" type="StaticBody2D" parent="."]
+position = Vector2(700, 450)
+script = ExtResource("3_moving")
+move_distance = 150.0
+move_speed = 80.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MovingPlatform"]
+shape = SubResource("rect_moving")
+
+[node name="Visual" type="ColorRect" parent="MovingPlatform"]
+offset_left = -150.0
+offset_top = -10.0
+offset_right = 150.0
+offset_bottom = 10.0
+color = Color(0.3, 0.5, 0.2, 1)
+
+[node name="Platform2" type="StaticBody2D" parent="."]
+position = Vector2(1100, 550)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
+shape = SubResource("rect_platform2")
+
+[node name="Visual" type="ColorRect" parent="Platform2"]
+offset_left = -150.0
+offset_top = -10.0
+offset_right = 150.0
+offset_bottom = 10.0
+color = Color(0.2, 0.4, 0.1, 1)
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1400.0
+offset_bottom = 800.0
+color = Color(0.9, 0.95, 0.7, 1)

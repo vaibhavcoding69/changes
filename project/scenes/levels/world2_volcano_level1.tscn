@@ -1,0 +1,87 @@
+[gd_scene load_steps=8 format=3 uid="uid://volcano1"]
+
+[ext_resource type="Script" path="res://scripts/level_template.gd" id="1_level"]
+[ext_resource type="Script" path="res://scripts/goal.gd" id="2_goal"]
+[ext_resource type="Script" path="res://scripts/mechanics/lava_hazard.gd" id="3_lava"]
+
+[sub_resource type="CircleShape2D" id="circle_goal"]
+radius = 35.0
+
+[sub_resource type="RectangleShape2D" id="rect_platform"]
+size = Vector2(250, 20)
+
+[sub_resource type="RectangleShape2D" id="rect_lava"]
+size = Vector2(300, 60)
+
+[node name="World2VolcanoLevel1" type="Node2D"]
+script = ExtResource("1_level")
+level_number = 1
+world_number = 2
+
+[node name="BallSpawn" type="Marker2D" parent="."]
+position = Vector2(150, 200)
+
+[node name="GoalZone" type="Area2D" parent="."]
+position = Vector2(1050, 200)
+script = ExtResource("2_goal")
+goal_color = Color(1.0, 0.5, 0.2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GoalZone"]
+shape = SubResource("circle_goal")
+
+[node name="Platform1" type="StaticBody2D" parent="."]
+position = Vector2(250, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
+shape = SubResource("rect_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform1"]
+offset_left = -125.0
+offset_top = -10.0
+offset_right = 125.0
+offset_bottom = 10.0
+color = Color(0.35, 0.25, 0.2, 1)
+
+[node name="Platform2" type="StaticBody2D" parent="."]
+position = Vector2(600, 450)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
+shape = SubResource("rect_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform2"]
+offset_left = -125.0
+offset_top = -10.0
+offset_right = 125.0
+offset_bottom = 10.0
+color = Color(0.35, 0.25, 0.2, 1)
+
+[node name="Platform3" type="StaticBody2D" parent="."]
+position = Vector2(950, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform3"]
+shape = SubResource("rect_platform")
+
+[node name="Visual" type="ColorRect" parent="Platform3"]
+offset_left = -125.0
+offset_top = -10.0
+offset_right = 125.0
+offset_bottom = 10.0
+color = Color(0.35, 0.25, 0.2, 1)
+
+[node name="LavaHazard" type="Area2D" parent="."]
+position = Vector2(600, 750)
+script = ExtResource("3_lava")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LavaHazard"]
+shape = SubResource("rect_lava")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1200.0
+offset_bottom = 800.0
+color = Color(0.2, 0.1, 0.08, 1)
+
+[node name="BackgroundGradient" type="ColorRect" parent="."]
+offset_top = 600.0
+offset_right = 1200.0
+offset_bottom = 800.0
+color = Color(0.4, 0.15, 0.05, 0.5)

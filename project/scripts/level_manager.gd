@@ -1,58 +1,74 @@
 extends Node
 
-## Level/Act progression manager
-## Handles scene transitions and progression through the 5 acts
+## Level/World progression manager
+## Handles scene transitions and progression through themed worlds
 
-const ACT_SCENES = {
-	0: "res://scenes/prologue.tscn",
+const WORLD_SCENES = {
+	0: "res://scenes/tutorial.tscn",
 	1: [
-		"res://scenes/levels/act1_denial_level1.tscn",
-		"res://scenes/levels/act1_denial_level2.tscn",
-		"res://scenes/levels/act1_denial_level3.tscn",
+		"res://scenes/levels/world1_meadow_level1.tscn",
+		"res://scenes/levels/world1_meadow_level2.tscn",
+		"res://scenes/levels/world1_meadow_level3.tscn",
 	],
-	2: [], # Anger (to be created)
-	3: [], # Bargaining (to be created)
-	4: [], # Depression (to be created)
-	5: [], # Acceptance (to be created)
-	6: "res://scenes/epilogue.tscn",
+	2: [
+		"res://scenes/levels/world2_volcano_level1.tscn",
+		"res://scenes/levels/world2_volcano_level2.tscn",
+		"res://scenes/levels/world2_volcano_level3.tscn",
+	],
+	3: [
+		"res://scenes/levels/world3_sky_level1.tscn",
+		"res://scenes/levels/world3_sky_level2.tscn",
+		"res://scenes/levels/world3_sky_level3.tscn",
+	],
+	4: [
+		"res://scenes/levels/world4_ocean_level1.tscn",
+		"res://scenes/levels/world4_ocean_level2.tscn",
+		"res://scenes/levels/world4_ocean_level3.tscn",
+	],
+	5: [
+		"res://scenes/levels/world5_space_level1.tscn",
+		"res://scenes/levels/world5_space_level2.tscn",
+		"res://scenes/levels/world5_space_level3.tscn",
+	],
+	6: "res://scenes/levels/bonus.tscn",
 }
 
 
-func load_act(act: int) -> void:
-	"""Load the first level of an act"""
-	GameState.current_act = act
+func load_world(world: int) -> void:
+	"""Load the first level of a world"""
+	GameState.current_world = world
 	GameState.current_level = 0
 	
 	var scene_path: String
-	if ACT_SCENES[act] is String:
-		scene_path = ACT_SCENES[act]
+	if WORLD_SCENES[world] is String:
+		scene_path = WORLD_SCENES[world]
 	else:
-		scene_path = ACT_SCENES[act][0]
+		scene_path = WORLD_SCENES[world][0]
 	
 	_load_scene(scene_path)
 
 
 func load_next_level() -> void:
-	"""Load the next level in the current act"""
-	var act = GameState.current_act
+	"""Load the next level in the current world"""
+	var world = GameState.current_world
 	var level = GameState.current_level
 	
-	if ACT_SCENES[act] is String:
-		# Single scene act (prologue/epilogue)
-		if act == 0:
-			load_act(1)
-		elif act == 6:
+	if WORLD_SCENES[world] is String:
+		# Single scene world (tutorial/bonus)
+		if world == 0:
+			load_world(1)
+		elif world == 6:
 			# Game complete
 			GameState.game_completed = true
 	else:
-		# Multi-level act
+		# Multi-level world
 		level += 1
-		if level < len(ACT_SCENES[act]):
+		if level < len(WORLD_SCENES[world]):
 			GameState.current_level = level
-			_load_scene(ACT_SCENES[act][level])
+			_load_scene(WORLD_SCENES[world][level])
 		else:
-			# Move to next act
-			load_act(act + 1)
+			# Move to next world
+			load_world(world + 1)
 
 
 func load_level_by_path(path: String) -> void:
@@ -61,7 +77,6 @@ func load_level_by_path(path: String) -> void:
 
 
 func _load_scene(path: String) -> void:
-	"""Load a scene with fade transition"""
-	# Optional: could add fade-to-black transition here
+	"""Load a scene with transition"""
 	print("[LevelManager] Loading: %s" % path)
 	get_tree().change_scene_to_file(path)

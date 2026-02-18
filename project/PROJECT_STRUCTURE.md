@@ -5,14 +5,14 @@ project/
 ├── project.godot          # Main Godot config (autoloads, settings, input)
 │
 ├── scenes/                # All game scenes (visual + behavior)
-│   ├── prologue.tscn      # "Before" intro scene (warm, two balls)
+│   ├── prologue.tscn      # Tutorial intro scene (learn to shoot)
 │   └── levels/
-│       └── level_1.tscn   # Act 1, Level 1 (Denial - empty room)
+│       └── level_1.tscn   # World 1, Level 1 (Meadow)
 │
 └── scripts/               # All game logic (GDScript)
-    ├── game_state.gd      # [AUTOLOAD] Global state (act, level, stats)
+    ├── game_state.gd      # [AUTOLOAD] Global state (world, level, stats)
     ├── level_manager.gd   # [AUTOLOAD] Scene/level progression
-    ├── prologue.gd        # Prologue scene controller
+    ├── prologue.gd        # Tutorial scene controller
     ├── game_manager.gd    # Level UI & progression (used by all levels)
     ├── player.gd          # Ball physics & controls (pull-and-shoot)
     ├── camera.gd          # Camera follow with screen shake
@@ -25,12 +25,12 @@ project/
 - **project.godot** — Engine settings, input maps, window size, autoloads
 
 ### Autoloads (Persist Across Scenes)
-- **GameState** — Global progress tracker (current act/level, death count, shots, etc.)
-- **LevelManager** — Handles scene transitions and progression through acts
+- **GameState** — Global progress tracker (current world/level, shots, stars, etc.)
+- **LevelManager** — Handles scene transitions and progression through worlds
 
 ### Scenes
-- **prologue.tscn** — Intro scene (two balls, introduction to controls)
-- **level_1.tscn** — First level of Act 1 (Denial)
+- **prologue.tscn** — Tutorial scene (learn pull-and-shoot controls)
+- **level_1.tscn** — First level of World 1 (Meadow)
   - 5 platforms, player, goal, UI, particles
   - Uses all the ball/camera/goal scripts
 
@@ -38,26 +38,25 @@ project/
 
 #### System Managers
 - **game_state.gd** (Autoload)
-  - Current act (0=prologue, 1-5=acts, 6=epilogue)
-  - Current level within act
-  - Player stats (total shots, deaths, memories collected)
-  - Methods: `next_act()`, `next_level()`, `reset()`
+  - Current world (0=tutorial, 1-5=worlds, 6=bonus)
+  - Current level within world
+  - Player stats (total shots, stars earned, levels completed)
+  - Methods: `next_world()`, `next_level()`, `reset()`
 
 - **level_manager.gd** (Autoload)
-  - Map of available level scenes per act
-  - Scene transitions with fade
-  - Methods: `load_act(n)`, `load_next_level()`, `load_level_by_path()`
+  - Map of available level scenes per world
+  - Scene transitions
+  - Methods: `load_world(n)`, `load_next_level()`, `load_level_by_path()`
 
 #### Scene Controllers
 - **prologue.gd**
-  - Intro scene behavior (two balls approaching each other)
-  - Detects when player reaches companion
-  - Fade-to-black sequence with "Then everything changed." text
-  - Transitions to Act 1 via LevelManager
+  - Tutorial scene behavior (learn to aim and shoot)
+  - Detects when player reaches the goal
+  - Transitions to World 1 via LevelManager
 
 - **game_manager.gd**
   - Used by all level scenes
-  - Tracks shot counter, level completion, rating system
+  - Tracks shot counter, level completion, star rating system
   - Input: Enter = next level, R = restart
   - Calls LevelManager.load_next_level()
 
@@ -85,23 +84,23 @@ project/
 ## Game Flow
 
 ```
-Prologue (intro scene)
-    ↓ (player reaches companion)
-    ↓ (fade to black + "Then everything changed.")
+Tutorial (intro scene)
+    ↓ (player reaches goal)
+    ↓ (transition to World 1)
     ↓
-Act 1: Denial → Level 1
+World 1: Meadow → Level 1
     ↓ (complete level)
     ↓
-Act 1: Denial → Level 2
+World 1: Meadow → Level 2
     ↓ (complete level)
     ↓
-Act 1: Denial → Level 3
-    ↓ (complete all levels in act)
+World 1: Meadow → Level 3
+    ↓ (complete all levels in world)
     ↓
-Act 2: Anger → Level 1
-    ... (repeat for Acts 3, 4, 5)
+World 2: Volcano → Level 1
+    ... (repeat for Worlds 3, 4, 5)
     ↓
-Epilogue (final scene)
+Bonus (final scene)
     ↓
 Game Complete
 ```
@@ -110,7 +109,7 @@ Game Complete
 
 ## How to Add a New Scene
 
-1. **Create the scene file**: `scenes/levels/act1_denial_level2.tscn`
+1. **Create the scene file**: `scenes/levels/world1_meadow_level2.tscn`
    - Add Player (RigidBody2D with player.gd script)
    - Add Goal (Area2D with goal.gd script)
    - Add platforms/obstacles (StaticBody2D)
@@ -120,9 +119,9 @@ Game Complete
 2. **Register in level_manager.gd**:
    ```gdscript
    1: [
-     "res://scenes/levels/act1_denial_level1.tscn",
-     "res://scenes/levels/act1_denial_level2.tscn",  # ← Add here
-     "res://scenes/levels/act1_denial_level3.tscn",
+     "res://scenes/levels/world1_meadow_level1.tscn",
+     "res://scenes/levels/world1_meadow_level2.tscn",  # ← Add here
+     "res://scenes/levels/world1_meadow_level3.tscn",
    ],
    ```
 
@@ -137,8 +136,8 @@ Game Complete
 ## Current Status
 
 ✅ **Completed**
-- Prologue scene with intro mechanics
-- Level 1 (Act 1 - Denial) with full gameplay
+- Tutorial scene with intro mechanics
+- Level 1 (World 1 - Meadow) with full gameplay
 - Player with animations and particles
 - Goal with celebration effects
 - Camera with screen shake
@@ -146,11 +145,10 @@ Game Complete
 - Scene auto-transitions
 
 🚧 **To Build**
-- Act 1 Level 2 & 3
-- Acts 2-5 scenes (12 more levels)
-- Epilogue scene
-- 4th wall breaking effects
-- Shaders (glitch, desaturate)
+- World 1 Level 2 & 3
+- Worlds 2-5 scenes (12 more levels)
+- Bonus scene
+- World-specific mechanics (wind, lava, currents, gravity)
 - Audio system
 
 ---
@@ -164,7 +162,7 @@ In the Godot editor, you can:
 
 Example in console:
 ```gdscript
-LevelManager.load_act(2)  # Jump to Act 2
+LevelManager.load_world(2)  # Jump to World 2
 LevelManager.load_level_by_path("res://scenes/prologue.tscn")
 ```
 

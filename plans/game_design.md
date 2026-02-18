@@ -1,16 +1,16 @@
 # Changes - Game Design Document
 
 ## Concept
-A cursor-controlled ball physics game in Godot about grief and loss. Players use a pull-and-shoot mechanic (like pool/billiards) to navigate through levels that progressively "break" as the game addresses the player directly through heavy 4th-wall intrusions.
+A cursor-controlled ball physics puzzle game in Godot. Players use a pull-and-shoot mechanic (like pool/billiards) to navigate through increasingly creative levels across 5 themed worlds. Simple to learn, satisfying to master.
 
 ## Theme
-Processing the death of a loved one — the waiting, the hope they'll return, the realization they won't, and learning to move forward. The game never explicitly mentions death until near the end.
+A fun, colorful puzzle adventure. The joy of nailing the perfect shot, discovering creative solutions, and chasing 3-star ratings.
 
 ## Core Mechanic: Pull-and-Shoot Ball Control
 
 ### Physics
 - **RigidBody2D** with **CircleShape2D** collider
-- **PhysicsMaterial**: bounce=0.8, friction=0.1
+- **PhysicsMaterial**: bounce=0.6, friction=0.3
 - **CCD enabled** to prevent tunneling at high speeds
 - **Gravity-based** 2D side-view physics
 
@@ -19,222 +19,166 @@ Processing the death of a loved one — the waiting, the hope they'll return, th
 2. Drag to set angle and power
 3. Release to launch (`apply_central_impulse`)
 4. Ball freezes while dragging
-5. Line2D shows trajectory preview (dashed line)
+5. Parabolic dot trajectory preview shows predicted path
 
 ### Tuning Parameters
 ```gdscript
-max_power = 1000  # Base (changes per emotional act)
-mass = 1.0        # Base (increases in depression act)
+max_power = 1600  # Maximum launch force
+mass = 1.0        # Standard ball mass
 drag_radius = 100 # Distance from ball to initiate drag
+bounce = 0.6      # Bounce coefficient
+friction = 0.3    # Surface friction
 ```
 
-## Emotional Structure: 5 Acts = 5 Stages of Grief
+## World Structure: 5 Themed Worlds
 
-### **Prologue: Before**
-- **Scene**: Two balls together in warm, colorful space
-- **Gameplay**: Simple goal — reach each other
+### **Tutorial: Learn the Basics**
+- **Scene**: Simple warm-colored space
+- **Gameplay**: Reach the goal
 - **Tutorial**: Learn pull-shoot mechanic
-- **End**: Fade to black. Text: *"Then everything changed."*
+- **End**: Transition to World 1
 
 ---
 
-### **Act 1: Denial (Levels 1–3)**
-**Visual**: Slightly muted colors, "normal" world  
-**Ball Physics**: Standard (mass=1.0, power=1000)  
-**Narrator Tone**: Confused, in denial  
+### **World 1: Meadow (Levels 1–3)**
+**Visual**: Lush greens, warm yellows, gentle rolling hills
+**Ball Physics**: Standard (mass=1.0, power=1600)
 
-**Level 1 - Empty Room**
-- Basic tutorial reinforcement
+**Level 1 - First Steps**
+- Basic platform hopping
 - Simple platforms, one goal
-- Narrator: *"It's fine. Everything's fine."*
+- Learn momentum and drag distance
 
-**Level 2 - The Hallway**
-- Linear path with small gaps
-- First anomaly: cursor stutters briefly
-- Narrator: *"Where did you go?"*
+**Level 2 - Angled Walls**
+- Introduce wall bouncing
+- Ricochet shots required
+- Teaches banking angles
 
-**Level 3 - Waiting Room**
-- Circular level, return to start
-- Ball sometimes doesn't respond to input
-- Narrator: *"You'll come back. You always do."*
-
----
-
-### **Act 2: Anger (Levels 4–5)**
-**Visual**: Red color wash, screen shakes, cracks appear  
-**Ball Physics**: Overpowered (power=2000)  
-**Narrator Tone**: Rage, frustration  
-
-**Level 4 - Breakable**
-- Walls crack when hit hard
-- Screen shake on collision
-- Narrator: *"WHY? Why did this happen?"*
-
-**Level 5 - Error**
-- Mid-level: Fake error dialog appears
-  - *"Error: expected_person.exe not found"*
-- Overshooting targets becomes a puzzle
-- Narrator: *"This isn't fair! None of this is fair!"*
+**Level 3 - Moving Platforms**
+- First moving platform introduction
+- Timing-based shots
+- Platform moves slowly left-right
 
 ---
 
-### **Act 3: Bargaining (Levels 6–8)**
-**Visual**: Glitch effects, window drift, visual distortion  
-**Ball Physics**: Standard but unpredictable  
-**Narrator Tone**: Desperate, pleading  
+### **World 2: Volcano (Levels 4–5)**
+**Visual**: Deep reds, oranges, glowing lava, cracks
+**Ball Physics**: Standard with lava hazard zones
 
-**Level 6 - Branching Paths**
-- Multiple routes that converge to same exit
-- Illusion of choice
-- Narrator: *"If I just try this way... maybe..."*
+**Level 4 - Lava Floor**
+- Platforms over lava (hazard = restart)
+- Multiple safe platforms
+- Screen shake on hard landings for juice
 
-**Level 7 - Memory Lane**
-- Memory fragments appear (collectibles)
-- Each shows flashback text: *"We used to..."*
-- Window starts drifting slowly
-- Narrator: *"If I could just go back..."*
-
-**Level 8 - [USERNAME]**
-- Cursor disappears briefly (3 seconds)
-- Game reads OS username, narrator addresses player:
-  - *"[USERNAME], maybe if we both try..."*
-- Heavy glitch shader
-- Narrator: *"Please. I need them back."*
+**Level 5 - Moving Bridges**
+- Moving platforms over lava
+- Timing precision required
+- Multiple paths with different difficulty
 
 ---
 
-### **Act 4: Depression (Levels 9–10)**
-**Visual**: Grayscale (desaturate shader), oppressive maze-like design  
-**Ball Physics**: Heavy (mass=5.0), hard to move  
-**Narrator Tone**: Silent or whispers  
+### **World 3: Sky (Levels 6–8)**
+**Visual**: Bright blues, whites, fluffy cloud platforms
+**Ball Physics**: Slightly floaty (lower gravity optional)
 
-**Level 9 - The Void**
-- Dark, empty space
-- Ball barely moves
-- Long silences between narrator lines
-- Window minimizes itself briefly, then restores
-- Narrator (whisper): *"I'm so tired."*
+**Level 6 - Floating Islands**
+- Platforms suspended in sky
+- Gaps require precise power control
+- Open feel with lots of air
 
-**Level 10 - Blackout**
-- Screen goes black mid-level
-- Text appears in center: *"[USERNAME], are you still there?"*
-- 5-second pause
-- Level resumes
-- Narrator (barely audible): *"...maybe it's time to stop fighting."*
+**Level 7 - Wind Gusts**
+- Wind zones push ball mid-flight
+- Must account for wind in trajectory
+- Adds a physics layer to puzzle-solving
 
----
-
-### **Act 5: Acceptance (Levels 11–12)**
-**Visual**: Color slowly returns (muted, not full saturation), open spaces  
-**Ball Physics**: Balanced (mass=1.0, power=1000)  
-**Narrator Tone**: Calm, reflective, sad but at peace  
-
-**Level 11 - Release**
-- Simple open space, minimal obstacles
-- Ball moves lighter again
-- Narrator: *"They're not coming back."*
-- Pause.
-- Narrator: *"...and that's okay."*
-
-**Level 12 - Forward**
-- Single long platform
-- Goal at far end
-- Narrator: *"I can't change what happened. But I can keep moving."*
-- On reaching goal: Ghost ball appears briefly, fades
-- Narrator: *"I'll carry you with me."*
+**Level 8 - Bouncy Clouds**
+- Cloud platforms with high bounce coefficient
+- Chain bounces to reach the goal
+- Fun, springy feel
 
 ---
 
-### **Epilogue: After**
-- Ball rolls forward automatically (no player control)
-- Gentle music, soft light
-- Camera follows peacefully
-- Credits as text fragments
-- Final text: *"Change is the only constant. And I'm still here."*
+### **World 4: Ocean (Levels 9–10)**
+**Visual**: Teals, aquamarine, underwater bubbles
+**Ball Physics**: Slower movement, current zones
+
+**Level 9 - Underwater Currents**
+- Current zones push ball in specific directions
+- Use currents to reach otherwise impossible goals
+- Puzzle element: ride the flow
+
+**Level 10 - Buoyancy**
+- Ball floats upward in water zones
+- Combine shooting with floating mechanics
+- Creative path-finding
 
 ---
 
-## Death Scare System
+### **World 5: Space (Levels 11–12)**
+**Visual**: Deep purple, starlight, nebula backgrounds
+**Ball Physics**: Low gravity, longer hang time
 
-**Trigger**: Player dies **10+ times** in Act 3 or Act 4
+**Level 11 - Zero-G**
+- Reduced gravity makes shots travel further
+- Must adjust power down
+- Open arena with floating obstacles
 
-**Sequence**:
-1. Screen freezes, glitch shader at max intensity
-2. Window shakes violently (10 rapid position changes)
-3. Cursor warps to center, locks
-4. Colors invert
-5. Fake crash screen (blue background, monospace white text):
-   ```
-   FATAL ERROR 0x000000GRIEF
-   
-   [USERNAME], STOP.
-   
-   You're not supposed to give up.
-   Not like this.
-   Not after everything.
-   ```
-6. 5-second freeze
-7. Fade to black
-8. Game restarts at current level checkpoint
-9. Music changes to ominous drone for remainder of act
-
-**Purpose**: Heavy 4th-wall punishment for repeated failure — the game itself intervenes to prevent player from giving up, mirroring the grief journey.
+**Level 12 - Orbital Challenge**
+- Circular platforms with orbital-like paths
+- Final challenge combining all learned skills
+- Satisfying difficulty curve payoff
 
 ---
 
-## Memory Fragment System
+### **Bonus: Victory**
+- Celebration scene
+- Total stats: shots, stars, levels completed
+- "Play again" or return to level select
 
-**Count**: 12 memory fragments (1 per main level)  
-**Type**: Collectible Area2D items  
-**Visual**: Glowing orbs or abstract shapes (use placeholder sprites)
+---
 
-**On Collection**:
-1. Screen fades slightly
-2. Popup window appears (semi-transparent panel)
-3. Text displays for 5 seconds:
-   - *"We used to sit here for hours."*
-   - *"You always laughed at that."*
-   - *"I miss your voice."*
-   - *"Remember when we..."*
-   - *(etc. — 12 unique memories)*
-4. Popup fades
-5. Narrator reads memory aloud
+## Star Rating System
 
-**Purpose**: Optional deeper storytelling. Not required to progress, but reveals relationship with lost loved one.
+**Per Level**:
+- ★★★ Perfect — 1 shot
+- ★★☆ Great — 2-3 shots
+- ★☆☆ Good — 4-5 shots
+- ☆☆☆ Keep trying — 6+ shots
+
+**Global Tracking**:
+- Total stars earned across all levels
+- Total shots fired
+- Levels completed
+- Fastest completion (optional)
 
 ---
 
 ## Technical Architecture
 
 ### Autoload Singletons
-1. **LevelManager** (`level_manager.gd`)
-   - Tracks current level, emotional act
+1. **GameState** (`game_state.gd`)
+   - Tracks current world, level, stats
+   - Persists across scene changes
+   
+2. **LevelManager** (`level_manager.gd`)
    - Handles scene transitions
-   - Stores global state (deaths, memories collected)
-   
-2. **Narrator** (`narrator.gd`)
-   - Text queue system
-   - Typewriter effect for RichTextLabel
-   - Positioned bottom-center with semi-transparent background
-   
-3. **FourthWall** (`fourth_wall/fourth_wall_manager.gd`)
-   - Coordinates all 4th-wall tricks
-   - References sub-modules (window_tricks, glitch_effects, death_tracker)
+   - World/level progression logic
+   - Methods: `load_world()`, `load_next_level()`
 
-### Core Scenes
-- **ball.tscn**: RigidBody2D with pull-shoot script, trajectory Line2D
-- **camera_controller.tscn**: Camera2D with smooth follow, shake function
-- **glitch_overlay.tscn**: Full-screen ColorRect with glitch shader
-- **narrator_label.tscn**: RichTextLabel for bottom-screen text
-- **memory_popup.tscn**: Panel + Label for flashback display
+### Core Scripts
+- **player.gd**: RigidBody2D with pull-shoot input, squash/stretch animations, trail
+- **camera.gd**: Camera2D with smooth follow, impact screen shake
+- **goal.gd**: Area2D with pulsing animation, celebration particles
+- **game_manager.gd**: Level UI, shot tracking, star ratings, completion flow
 
 ### Level Structure
 Each level is a scene (`level_XX.tscn`) containing:
-- StaticBody2D platforms and walls (TileMap or individual polygons)
-- Ball spawn point (Position2D marker)
-- Goal zone (Area2D)
-- Optional: Memory fragment collectible
-- Optional: Hazards (kill zones, moving obstacles)
+- StaticBody2D platforms and walls
+- Player (RigidBody2D with player.gd)
+- Goal zone (Area2D with goal.gd)
+- Camera (Camera2D with camera.gd)
+- UI layer (managed by game_manager.gd)
+- Optional: Moving platforms, hazard zones, wind zones
 
 ---
 
@@ -243,69 +187,70 @@ Each level is a scene (`level_XX.tscn`) containing:
 ### Sprites
 - **Kenney.nl** (free asset packs): Circles, platforms, UI elements
 - **OpenGameArt.org**: Abstract shapes, particle effects
-- **Placeholder**: Use Godot's built-in shapes (Circle, Rectangle) with solid colors
+- **Placeholder**: Use Godot's built-in shapes with solid colors
 
 ### Audio
-- **Freesound.org**: SFX (ball bounce, shoot, collect, glitch)
-- **Incompetech / Kevin MacLeod**: Ambient music (CC BY)
+- **Freesound.org**: SFX (ball bounce, shoot, collect, goal)
+- **Incompetech / Kevin MacLeod**: Upbeat music (CC BY)
 - **Zapsplat**: Additional SFX library
 
 ### Fonts
 - **Google Fonts**: 
-  - Roboto Mono (narrator, error messages)
+  - Roboto Mono (UI, counters)
   - Press Start 2P (pixel-style if desired)
 
 ---
 
 ## Implementation Phases
 
-### Phase 1: Foundation (Current)
+### Phase 1: Foundation (Completed)
 - [x] Create plans folder
-- [ ] Initialize Godot 4 project
-- [ ] Implement ball pull-shoot mechanic
-- [ ] Create camera controller
-- [ ] Build autoload singletons (LevelManager, Narrator)
+- [x] Initialize Godot 4 project
+- [x] Implement ball pull-shoot mechanic
+- [x] Create camera controller
+- [x] Build autoload singletons (GameState, LevelManager)
 
-### Phase 2: Core Systems
-- [ ] Implement 4th-wall module (window tricks, glitch effects)
-- [ ] Create glitch and desaturate shaders
-- [ ] Build death tracker and scare system
-- [ ] Implement memory fragment system
+### Phase 2: Content
+- [ ] Create Tutorial scene
+- [ ] Build World 1 levels (1-3: Meadow)
+- [ ] Build World 2 levels (4-5: Volcano)
+- [ ] Build World 3 levels (6-8: Sky)
+- [ ] Build World 4 levels (9-10: Ocean)
+- [ ] Build World 5 levels (11-12: Space)
+- [ ] Create Bonus/Victory scene
 
-### Phase 3: Content
-- [ ] Create Prologue scene
-- [ ] Build Act 1 levels (1-3)
-- [ ] Build Act 2 levels (4-5)
-- [ ] Build Act 3 levels (6-8)
-- [ ] Build Act 4 levels (9-10)
-- [ ] Build Act 5 levels (11-12)
-- [ ] Create Epilogue scene
+### Phase 3: World Mechanics
+- [ ] Implement lava hazard zones
+- [ ] Implement wind gust zones
+- [ ] Implement water current zones
+- [ ] Implement low gravity zones
+- [ ] Implement moving platforms
+- [ ] Implement bouncy surfaces
 
 ### Phase 4: Polish
-- [ ] Integrate all narrator lines
-- [ ] Add audio (music per act, SFX)
-- [ ] Tune ball physics per emotional act
+- [ ] Add audio (music per world, SFX)
+- [ ] Tune ball physics per world
+- [ ] Add collectibles (coins/stars)
 - [ ] Test full playthrough
-- [ ] Export build, test cross-platform
+- [ ] Export build
 
 ---
 
 ## Key Design Pillars
 
-1. **Mechanical Metaphor**: Ball physics directly reflect emotional state (heavy = depression, overpowered = anger)
-2. **Environmental Storytelling**: Level design reflects grief stages (circular denial level, branching bargaining paths, void-like depression spaces)
-3. **4th-Wall as Desperation**: Anomalies escalate as narrator becomes more desperate to connect with player
-4. **Subtlety Before Clarity**: Never say "death" until Act 5 — allow players to infer
-5. **Player Agency in Spectacle**: Epilogue removes control — watching the ball move forward symbolizes acceptance and letting go
+1. **Satisfying Feel**: Every shot should feel good — squash/stretch, particles, screen shake, trajectory preview
+2. **Easy to Learn, Hard to Master**: Simple mechanic with deep skill ceiling
+3. **Visual Variety**: Each world has a distinct color palette and aesthetic
+4. **Fair Challenge**: Difficulty ramps smoothly, failures feel earned not cheap
+5. **Replayability**: Star ratings encourage revisiting levels for perfect scores
 
 ---
 
 ## Success Criteria
 
 - [ ] Pull-shoot mechanic feels satisfying and controllable
-- [ ] Emotional arc is clear through visual/mechanical changes
-- [ ] 4th-wall tricks surprise but don't frustrate (except death scare)
-- [ ] Story is understandable without explicit exposition
-- [ ] Death scare is genuinely unsettling
-- [ ] Epilogue provides closure and emotional resolution
+- [ ] Each world feels visually distinct and fresh
+- [ ] Difficulty curve is smooth and fair
+- [ ] Star ratings motivate replay
 - [ ] Game is completable in 20-30 minutes
+- [ ] Players say "one more try" frequently
