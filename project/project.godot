@@ -42,6 +42,10 @@ pause={
 ]
 }
 
+[debug]
+
+gdscript/warnings/treat_warnings_as_errors=false
+
 [physics]
 
 2d/default_gravity=980.0

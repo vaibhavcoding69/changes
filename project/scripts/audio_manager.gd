@@ -241,12 +241,13 @@ func _on_music_finished() -> void:
 # ===========================================================================
 
 func play_sfx(sfx_name: String, pitch_variation: float = 0.0, volume_offset: float = 0.0) -> void:
-	var path := SFX_LIBRARY.get(sfx_name, "")
+	var path: String = SFX_LIBRARY.get(sfx_name, "")
 	if path.is_empty():
 		push_warning("[AudioManager] Unknown SFX: %s" % sfx_name)
 		return
 	
-	var stream: AudioStream = _get_or_load_stream(path)
+	# warning-ignore:inferred_variant_type
+	var stream := _get_or_load_stream(path) as AudioStream
 	if not stream:
 		return
 	
@@ -271,11 +272,12 @@ func play_sfx_at_position(sfx_name: String, position: Vector2, max_distance: flo
 
 
 func play_ui_sfx(sfx_name: String) -> void:
-	var path := SFX_LIBRARY.get(sfx_name, "")
+	var path: String = SFX_LIBRARY.get(sfx_name, "")
 	if path.is_empty():
 		return
 	
-	var stream: AudioStream = _get_or_load_stream(path)
+	# warning-ignore:inferred_variant_type
+	var stream := _get_or_load_stream(path) as AudioStream
 	if not stream:
 		return
 	
@@ -332,10 +334,11 @@ func _get_or_load_stream(path: String) -> AudioStream:
 		return null
 	
 	if _cached_streams.has(path):
-		return _cached_streams[path]
+		var cached: AudioStream = _cached_streams[path]
+		return cached
 	
 	if ResourceLoader.exists(path):
-		var stream := load(path) as AudioStream
+		var stream: AudioStream = load(path) as AudioStream
 		if stream:
 			_cached_streams[path] = stream
 			return stream
@@ -345,7 +348,7 @@ func _get_or_load_stream(path: String) -> AudioStream:
 
 func preload_sfx(sfx_names: Array) -> void:
 	for sfx_name in sfx_names:
-		var path := SFX_LIBRARY.get(sfx_name, "")
+		var path: String = SFX_LIBRARY.get(sfx_name, "")
 		_get_or_load_stream(path)
 
 
