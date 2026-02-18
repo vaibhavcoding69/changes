@@ -301,7 +301,7 @@ func _build_grass_blades(count: int) -> void:
 func _update_grass_blades(delta: float) -> void:
 	for gb in _grass_blades:
 		var node: ColorRect = gb["node"]
-		var sway := sin(_time * gb["sway_speed"] + gb["phase"]) * gb["sway_amount"]
+		var sway: float = sin(_time * gb["sway_speed"] + gb["phase"]) * gb["sway_amount"]
 		node.rotation = sway
 
 		# React to nearby player (bend away)

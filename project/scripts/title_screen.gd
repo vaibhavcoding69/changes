@@ -152,7 +152,7 @@ func _update_background(delta: float) -> void:
 		node.position = Vector2(orb_data["x"], orb_data["y"])
 
 		# Gentle alpha pulse
-		var alpha_pulse := orb_data["base_alpha"] + sin(time_elapsed * 2.0 + orb_data["phase"]) * 0.06
+		var alpha_pulse: float = orb_data["base_alpha"] + sin(time_elapsed * 2.0 + orb_data["phase"]) * 0.06
 		node.color.a = clampf(alpha_pulse, 0.02, 0.35)
 
 

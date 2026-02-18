@@ -5,7 +5,7 @@ extends Area2D
 
 @export_group("Gravity Properties")
 @export var gravity_scale: float = 0.3  # Multiplier for normal gravity
-@export var gravity_direction: Vector2 = Vector2.DOWN
+@export var gravity_dir: Vector2 = Vector2.DOWN
 @export var use_radial_gravity: bool = false  # Pull toward center
 @export var radial_strength: float = 200.0
 @export var damping: float = 0.98  # Velocity damping in zone
@@ -155,17 +155,17 @@ func _draw_gravity_field() -> void:
 		
 		for i in range(arrow_count):
 			var offset := fmod(_time * 30 + i * spacing, spacing * arrow_count) - spacing * arrow_count / 2
-			var arrow_pos := gravity_direction.normalized() * offset
+			var arrow_pos := gravity_dir.normalized() * offset
 			
 			# Arrow
 			var arrow_length := 30.0
-			var end_pos := arrow_pos + gravity_direction.normalized() * arrow_length
-			var alpha := 0.3 - abs(offset) / (spacing * arrow_count) * 0.2
+			var end_pos := arrow_pos + gravity_dir.normalized() * arrow_length
+			var alpha: float = 0.3 - abs(offset) / (spacing * arrow_count) * 0.2
 			
 			draw_line(arrow_pos, end_pos, Color(0.6, 0.4, 1.0, alpha), 2.0)
 			
 			# Arrow head
-			var angle := gravity_direction.angle()
+			var angle := gravity_dir.angle()
 			var head1 := end_pos + Vector2(cos(angle + PI * 0.8), sin(angle + PI * 0.8)) * 8
 			var head2 := end_pos + Vector2(cos(angle - PI * 0.8), sin(angle - PI * 0.8)) * 8
 			draw_line(end_pos, head1, Color(0.6, 0.4, 1.0, alpha), 2.0)

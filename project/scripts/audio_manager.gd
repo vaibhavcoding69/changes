@@ -246,7 +246,7 @@ func play_sfx(sfx_name: String, pitch_variation: float = 0.0, volume_offset: flo
 		push_warning("[AudioManager] Unknown SFX: %s" % sfx_name)
 		return
 	
-	var stream := _get_or_load_stream(path)
+	var stream: AudioStream = _get_or_load_stream(path)
 	if not stream:
 		return
 	
@@ -275,7 +275,7 @@ func play_ui_sfx(sfx_name: String) -> void:
 	if path.is_empty():
 		return
 	
-	var stream := _get_or_load_stream(path)
+	var stream: AudioStream = _get_or_load_stream(path)
 	if not stream:
 		return
 	
@@ -304,7 +304,7 @@ func _get_available_sfx_player() -> AudioStreamPlayer:
 # ===========================================================================
 
 func play_ball_shoot(power_ratio: float) -> void:
-	var pitch := lerp(0.9, 1.2, power_ratio)
+	var pitch: float = lerp(0.9, 1.2, power_ratio)
 	play_sfx("ball_shoot", 0.05)
 
 
@@ -312,7 +312,7 @@ func play_ball_bounce(impact_strength: float) -> void:
 	if impact_strength < 100:
 		play_sfx("ball_bounce_soft", 0.1, -6.0)
 	else:
-		var volume := lerp(-12.0, 0.0, clampf(impact_strength / 500.0, 0.0, 1.0))
+		var volume: float = lerp(-12.0, 0.0, clampf(impact_strength / 500.0, 0.0, 1.0))
 		play_sfx("ball_bounce", 0.15, volume)
 
 
