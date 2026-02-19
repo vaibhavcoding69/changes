@@ -217,4 +217,6 @@ If you encounter issues:
 3. Test the ball mechanic
 4. Build levels world by world
 
+Tip: Per-level camera limits can be set via the `camera_limits` exported Rect2 on a level or by adding a `CameraBounds` Node2D to the scene root. Use the `Camera Debug Overlay` (runtime) to visualize limits.
+
 *Aim. Launch. Bounce. Repeat.*

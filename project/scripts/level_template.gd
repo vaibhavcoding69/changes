@@ -12,6 +12,8 @@ var goal_scene: PackedScene = preload("res://scenes/goal.tscn")
 @onready var ball_spawn: Marker2D = $BallSpawn
 @onready var goal_zone: Area2D = $GoalZone
 
+@export var camera_limits: Rect2 = Rect2(-600, -400, 1200, 800)
+
 var ball: RigidBody2D
 var camera: Camera2D
 
@@ -32,6 +34,21 @@ func _ready() -> void:
 	camera.set_script(camera_script)
 	add_child(camera)
 	camera.current = true
+	# apply per-level limits (if a CameraBounds Node2D exists use that)
+	var bounds_node = get_node_or_null("CameraBounds")
+	if bounds_node and bounds_node is Node2D:
+		var bounds := Rect2(bounds_node.position, Vector2(1024, 768))
+		camera.set_limits(bounds)
+	else:
+		camera.set_limits(camera_limits)
+	
+	# optional runtime debug overlay (visualizes limits & target)
+	if camera.debug_draw or ProjectSettings.has_setting("debug/show_camera_bounds") and ProjectSettings.get_setting("debug/show_camera_bounds"):
+		var overlay_script = load("res://scripts/debug/camera_debug_overlay.gd")
+		var overlay = overlay_script.new()
+		overlay.camera_path = camera.get_path()
+		add_child(overlay)
+
 	if ball:
 		camera.target = camera.get_path_to(ball)
 
