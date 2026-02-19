@@ -31,6 +31,7 @@ func _ready() -> void:
 	var camera_script = load("res://scripts/camera.gd")
 	camera.set_script(camera_script)
 	add_child(camera)
+	camera.current = true
 	if ball:
 		camera.target = camera.get_path_to(ball)
 
