@@ -9,20 +9,21 @@ func _ready():
 	WORLD_SCENES[0] = "res://scenes/tutorial.tscn"
 	WORLD_SCENES[6] = "res://scenes/levels/bonus.tscn"
 	
-	var dir = Directory.new()
-	if dir.open("res://scenes/levels") == OK:
+	var dir := DirAccess.open("res://scenes/levels")
+	if dir != null:
 		dir.list_dir_begin()
-		var file_name = dir.get_next()
+		var file_name: String = dir.get_next()
 		while file_name != "":
 			if file_name.ends_with(".tscn") and file_name != "bonus.tscn":
-				var parts = file_name.get_basename().split("_")
+				var parts: PackedStringArray = file_name.get_basename().split("_")
 				if parts.size() >= 3 and parts[0].begins_with("world") and parts[2].begins_with("level"):
-					var world = int(parts[0].substr(5))
-					var level = int(parts[2].substr(5))
+					var world: int = int(parts[0].substr(5))
+					var level: int = int(parts[2].substr(5))
 					if not WORLD_SCENES.has(world):
 						WORLD_SCENES[world] = []
 					WORLD_SCENES[world].append("res://scenes/levels/" + file_name)
 			file_name = dir.get_next()
+		dir.list_dir_end()
 		
 		# Sort each world's levels
 		for world_key in WORLD_SCENES.keys():

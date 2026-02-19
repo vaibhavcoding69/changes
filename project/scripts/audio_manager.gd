@@ -225,7 +225,7 @@ func resume_music() -> void:
 
 
 func play_world_music(world: int, fade_in: float = 2.0) -> void:
-	var track := WORLD_MUSIC.get(world, "")
+	var track: String = WORLD_MUSIC.get(world, "")
 	if track:
 		play_music(track, fade_in)
 

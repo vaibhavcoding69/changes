@@ -113,13 +113,12 @@ func _draw_star(base_scale: float) -> void:
 
 func _draw_coin(base_scale: float) -> void:
 	var scale: float = base_scale
-	# warning-ignore:inferred_variant_type
-	var glow_pulse := ((sin(_time * 3.0) + 1.0) * 0.5 * glow_intensity) as float
+	var glow_pulse: float = (sin(_time * 3.0) + 1.0) * 0.5 * glow_intensity
 	
 	# Ellipse squash for 3D rotation effect
-	var squash := abs(cos(_visual_rotation * 2))
+	var squash: float = abs(cos(_visual_rotation * 2))
 	var coin_width: float = 14 * scale * (0.3 + squash * 0.7)
-	var coin_height := 14 * scale
+	var coin_height: float = 14 * scale
 	
 	# Glow
 	for i in range(3):
