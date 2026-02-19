@@ -22,8 +22,9 @@ func set_target(path: NodePath) -> void:
 	# Resolve immediately if possible, otherwise lazy-resolve in _process
 	_target_node = get_node_or_null(path)
 	if _target_node and _target_node.has_signal("impact_occurred"):
-		if not _target_node.is_connected("impact_occurred", self, "_on_impact"):
-			_target_node.impact_occurred.connect(_on_impact)
+		var impact_callable := Callable(self, "_on_impact")
+		if not _target_node.is_connected("impact_occurred", impact_callable):
+			_target_node.impact_occurred.connect(impact_callable)
 
 
 func set_limits(rect: Rect2) -> void:
@@ -36,8 +37,9 @@ func _ready() -> void:
 	if target:
 		_target_node = get_node_or_null(target)
 		if _target_node and _target_node.has_signal("impact_occurred"):
-			if not _target_node.is_connected("impact_occurred", self, "_on_impact"):
-				_target_node.impact_occurred.connect(_on_impact)
+			var impact_callable := Callable(self, "_on_impact")
+			if not _target_node.is_connected("impact_occurred", impact_callable):
+				_target_node.impact_occurred.connect(impact_callable)
 
 
 func _process(delta: float) -> void:
@@ -45,11 +47,9 @@ func _process(delta: float) -> void:
 	if not _target_node and target:
 		_target_node = get_node_or_null(target)
 		if _target_node and _target_node.has_signal("impact_occurred"):
-			if not _target_node.is_connected("impact_occurred", self, "_on_impact"):
-				_target_node.impact_occurred.connect(_on_impact)
-
-	if not _target_node:
-		return
+			var impact_callable := Callable(self, "_on_impact")
+			if not _target_node.is_connected("impact_occurred", impact_callable):
+				_target_node.impact_occurred.connect(impact_callable)
 
 	# Destination with optional look-ahead and deadzone handling
 	var dest: Vector2 = _target_node.global_position
