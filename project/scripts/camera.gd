@@ -3,16 +3,16 @@ extends Camera2D
 ## Enhanced Camera2D — lazy target resolution, optional world limits,
 ## look-ahead, screen shake and lightweight runtime debug support.
 
-export var target: NodePath setget set_target
-export var smooth_speed: float = 4.0
-export var look_ahead: float = 0.12
-export var shake_decay: float = 6.0
+@export var target: NodePath : set = set_target
+@export var smooth_speed: float = 4.0
+@export var look_ahead: float = 0.12
+@export var shake_decay: float = 6.0
 
-export var clamp_to_limits: bool = false
-export var limits_rect: Rect2 = Rect2(-600, -400, 1200, 800)
+@export var clamp_to_limits: bool = false
+@export var limits_rect: Rect2 = Rect2(-600, -400, 1200, 800)
 
-export var deadzone: Vector2 = Vector2.ZERO
-export var debug_draw: bool = false
+@export var deadzone: Vector2 = Vector2.ZERO
+@export var debug_draw: bool = false
 
 var _target_node: Node2D = null
 var _shake_strength: float = 0.0
