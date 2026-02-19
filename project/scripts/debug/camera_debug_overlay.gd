@@ -9,7 +9,8 @@ extends Node2D
 @export var border_color: Color = Color(0.9, 0.2, 0.2, 0.85)
 
 func _process(_delta: float) -> void:
-	update()
+	# Godot 4: queue_redraw replaces update()
+	queue_redraw()
 
 func _draw() -> void:
 	var cam = get_node_or_null(camera_path) as Node

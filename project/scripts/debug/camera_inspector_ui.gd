@@ -9,9 +9,9 @@ func _ready() -> void:
 	set_process(true)
 	anchor_right = 1.0
 	anchor_bottom = 1.0
-	margin_right = -16
-	margin_bottom = -16
-	rect_min_size = Vector2(220, 86)
+	offset_right = -16
+	offset_bottom = -16
+	custom_minimum_size = Vector2(220, 86)
 
 func _process(_delta: float) -> void:
 	var cam = get_node_or_null(camera_path) as Node
