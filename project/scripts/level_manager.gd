@@ -3,39 +3,42 @@ extends Node
 ## Level/World progression manager
 ## Handles scene transitions and progression through themed worlds
 
-const WORLD_SCENES = {
-	0: "res://scenes/tutorial.tscn",
-	1: [
-		"res://scenes/levels/world1_meadow_level1.tscn",
-		"res://scenes/levels/world1_meadow_level2.tscn",
-		"res://scenes/levels/world1_meadow_level3.tscn",
-	],
-	2: [
-		"res://scenes/levels/world2_volcano_level1.tscn",
-		"res://scenes/levels/world2_volcano_level2.tscn",
-		"res://scenes/levels/world2_volcano_level3.tscn",
-	],
-	3: [
-		"res://scenes/levels/world3_sky_level1.tscn",
-		"res://scenes/levels/world3_sky_level2.tscn",
-		"res://scenes/levels/world3_sky_level3.tscn",
-	],
-	4: [
-		"res://scenes/levels/world4_ocean_level1.tscn",
-		"res://scenes/levels/world4_ocean_level2.tscn",
-		"res://scenes/levels/world4_ocean_level3.tscn",
-	],
-	5: [
-		"res://scenes/levels/world5_space_level1.tscn",
-		"res://scenes/levels/world5_space_level2.tscn",
-		"res://scenes/levels/world5_space_level3.tscn",
-	],
-	6: "res://scenes/levels/bonus.tscn",
-}
+var WORLD_SCENES = {}
+
+func _ready():
+	WORLD_SCENES[0] = "res://scenes/tutorial.tscn"
+	WORLD_SCENES[6] = "res://scenes/levels/bonus.tscn"
+	
+	var dir = Directory.new()
+	if dir.open("res://scenes/levels") == OK:
+		dir.list_dir_begin()
+		var file_name = dir.get_next()
+		while file_name != "":
+			if file_name.ends_with(".tscn") and file_name != "bonus.tscn":
+				var parts = file_name.get_basename().split("_")
+				if parts.size() >= 3 and parts[0].begins_with("world") and parts[2].begins_with("level"):
+					var world = int(parts[0].substr(5))
+					var level = int(parts[2].substr(5))
+					if not WORLD_SCENES.has(world):
+						WORLD_SCENES[world] = []
+					WORLD_SCENES[world].append("res://scenes/levels/" + file_name)
+			file_name = dir.get_next()
+		
+		# Sort each world's levels
+		for world_key in WORLD_SCENES.keys():
+			if WORLD_SCENES[world_key] is Array:
+				WORLD_SCENES[world_key].sort()
 
 
 func load_world(world: int) -> void:
 	"""Load the first level of a world"""
+	if not WORLD_SCENES.has(world):
+		if world < 6:
+			load_world(world + 1)
+		else:
+			GameState.game_completed = true
+		return
+	
 	GameState.current_world = world
 	GameState.current_level = 0
 	
