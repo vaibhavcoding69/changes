@@ -30,9 +30,9 @@ func _ready() -> void:
 	camera = Camera2D.new()
 	var camera_script = load("res://scripts/camera.gd")
 	camera.set_script(camera_script)
+	add_child(camera)
 	if ball:
 		camera.target = camera.get_path_to(ball)
-	add_child(camera)
 
 func _on_goal_entered(body: Node2D) -> void:
 	if body == ball:
