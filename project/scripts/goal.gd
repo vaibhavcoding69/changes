@@ -74,7 +74,7 @@ func _draw_ring(radius: float, color: Color, width: float) -> void:
 
 
 func _on_body_entered(body: Node2D) -> void:
-	if body.name == "Player" and not _reached:
+	if body is RigidBody2D and not _reached:
 		_reached = true
 		goal_reached.emit()
 		_celebrate()

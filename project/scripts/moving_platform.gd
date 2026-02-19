@@ -12,7 +12,7 @@ var direction: int = 1
 func _ready() -> void:
 	start_position = position
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var move_vector = Vector2.RIGHT if horizontal else Vector2.DOWN
 	position += move_vector * direction * move_speed * delta
 	

@@ -55,9 +55,9 @@ func _ready() -> void:
 
 func _on_goal_entered(body: Node2D) -> void:
 	if body == ball:
-		# Level complete
+		# Level complete — defer to avoid removing CollisionObjects during physics callback
 		GameState.complete_level(world_number, level_number, ball.shot_count)
-		LevelManager.load_next_level()
+		LevelManager.call_deferred("load_next_level")
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("reset"):

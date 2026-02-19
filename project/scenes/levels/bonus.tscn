@@ -43,8 +43,7 @@ color = Color(1.0, 0.85, 0.3, 1)
 position = Vector2(200, 600)
 script = ExtResource("3_bounce")
 bounce_multiplier = 2.5
-squash_amount = 0.3
-visual_color = Color(1.0, 0.5, 0.9, 1)
+surface_color = Color(1.0, 0.5, 0.9, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BouncePad1"]
 shape = SubResource("rect_bounce")
@@ -60,8 +59,7 @@ color = Color(1.0, 0.5, 0.9, 1)
 position = Vector2(400, 600)
 script = ExtResource("3_bounce")
 bounce_multiplier = 2.5
-squash_amount = 0.3
-visual_color = Color(0.5, 1.0, 0.9, 1)
+surface_color = Color(0.5, 1.0, 0.9, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BouncePad2"]
 shape = SubResource("rect_bounce")
@@ -77,8 +75,7 @@ color = Color(0.5, 1.0, 0.9, 1)
 position = Vector2(600, 600)
 script = ExtResource("3_bounce")
 bounce_multiplier = 2.5
-squash_amount = 0.3
-visual_color = Color(1.0, 1.0, 0.4, 1)
+surface_color = Color(1.0, 1.0, 0.4, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BouncePad3"]
 shape = SubResource("rect_bounce")
@@ -94,8 +91,7 @@ color = Color(1.0, 1.0, 0.4, 1)
 position = Vector2(800, 600)
 script = ExtResource("3_bounce")
 bounce_multiplier = 2.5
-squash_amount = 0.3
-visual_color = Color(0.5, 0.8, 1.0, 1)
+surface_color = Color(0.5, 0.8, 1.0, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BouncePad4"]
 shape = SubResource("rect_bounce")
@@ -111,8 +107,7 @@ color = Color(0.5, 0.8, 1.0, 1)
 position = Vector2(1000, 600)
 script = ExtResource("3_bounce")
 bounce_multiplier = 2.5
-squash_amount = 0.3
-visual_color = Color(1.0, 0.6, 0.4, 1)
+surface_color = Color(1.0, 0.6, 0.4, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BouncePad5"]
 shape = SubResource("rect_bounce")
@@ -128,10 +123,10 @@ color = Color(1.0, 0.6, 0.4, 1)
 position = Vector2(150, 200)
 script = ExtResource("2_collect")
 collectible_id = "bonus_star_01"
-point_value = 100
-spin_speed = 3.0
-bob_height = 10.0
-collect_color = Color(1.0, 0.9, 0.3, 1)
+points_value = 100
+rotation_speed = 3.0
+bob_amplitude = 10.0
+star_color = Color(1.0, 0.9, 0.3, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Star1"]
 shape = SubResource("circle_star")
@@ -140,10 +135,10 @@ shape = SubResource("circle_star")
 position = Vector2(350, 150)
 script = ExtResource("2_collect")
 collectible_id = "bonus_star_02"
-point_value = 100
-spin_speed = 3.0
-bob_height = 10.0
-collect_color = Color(1.0, 0.9, 0.3, 1)
+points_value = 100
+rotation_speed = 3.0
+bob_amplitude = 10.0
+star_color = Color(1.0, 0.9, 0.3, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Star2"]
 shape = SubResource("circle_star")
@@ -152,10 +147,10 @@ shape = SubResource("circle_star")
 position = Vector2(600, 100)
 script = ExtResource("2_collect")
 collectible_id = "bonus_star_03"
-point_value = 500
-spin_speed = 5.0
-bob_height = 15.0
-collect_color = Color(1.0, 0.5, 1.0, 1)
+points_value = 500
+rotation_speed = 5.0
+bob_amplitude = 15.0
+star_color = Color(1.0, 0.5, 1.0, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Star3"]
 shape = SubResource("circle_star")
@@ -164,10 +159,10 @@ shape = SubResource("circle_star")
 position = Vector2(850, 150)
 script = ExtResource("2_collect")
 collectible_id = "bonus_star_04"
-point_value = 100
-spin_speed = 3.0
-bob_height = 10.0
-collect_color = Color(1.0, 0.9, 0.3, 1)
+points_value = 100
+rotation_speed = 3.0
+bob_amplitude = 10.0
+star_color = Color(1.0, 0.9, 0.3, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Star4"]
 shape = SubResource("circle_star")
@@ -176,10 +171,10 @@ shape = SubResource("circle_star")
 position = Vector2(1050, 200)
 script = ExtResource("2_collect")
 collectible_id = "bonus_star_05"
-point_value = 100
-spin_speed = 3.0
-bob_height = 10.0
-collect_color = Color(1.0, 0.9, 0.3, 1)
+points_value = 100
+rotation_speed = 3.0
+bob_amplitude = 10.0
+star_color = Color(1.0, 0.9, 0.3, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Star5"]
 shape = SubResource("circle_star")

@@ -21,8 +21,8 @@ func _ready() -> void:
 	tw.tween_property($ColorRect, "color:a", 0.0, 0.0)  # Background already visible
 	tw.tween_property(hint_label, "modulate:a", 1.0, 1.5).set_delay(1.0)
 	
-	# Check if goal reached
-	goal.area_entered.connect(_on_goal_area_entered)
+	# Check if goal reached (ball is a RigidBody2D, so use body_entered)
+	goal.body_entered.connect(_on_goal_area_entered)
 
 
 func _input(event: InputEvent) -> void:
