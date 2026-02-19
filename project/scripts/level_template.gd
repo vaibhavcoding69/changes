@@ -33,7 +33,7 @@ func _ready() -> void:
 	var camera_script = load("res://scripts/camera.gd")
 	camera.set_script(camera_script)
 	add_child(camera)
-	camera.current = true
+	camera.make_current()
 	# apply per-level limits (if a CameraBounds Node2D exists use that)
 	var bounds_node = get_node_or_null("CameraBounds")
 	if bounds_node and bounds_node is Node2D:
