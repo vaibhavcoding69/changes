@@ -16,6 +16,7 @@ extends Camera2D
 
 var _target_node: Node2D = null
 var _shake_strength: float = 0.0
+var _first_frame: bool = true
 
 
 func set_target(path: NodePath) -> void:
@@ -51,20 +52,35 @@ func _process(delta: float) -> void:
 			if not _target_node.is_connected("impact_occurred", impact_callable):
 				_target_node.impact_occurred.connect(impact_callable)
 
-	# Destination with optional look-ahead and deadzone handling
+	if not _target_node:
+		return
+
+	# Destination with optional look-ahead
 	var dest: Vector2 = _target_node.global_position
 	if _target_node is RigidBody2D:
 		dest += _target_node.linear_velocity * look_ahead
 
 	# Clamp destination to world limits (takes viewport half-size into account)
 	if clamp_to_limits and limits_rect.size != Vector2.ZERO:
-		var vp_size := get_viewport().get_visible_rect().size * 0.5 * zoom
+		var vp_size := get_viewport().get_visible_rect().size * 0.5 / zoom
 		var min_pos := limits_rect.position + vp_size
 		var max_pos := limits_rect.position + limits_rect.size - vp_size
-		dest.x = clamp(dest.x, min_pos.x, max_pos.x)
-		dest.y = clamp(dest.y, min_pos.y, max_pos.y)
+		# If viewport is larger than the limits, center on the bounds
+		if min_pos.x > max_pos.x:
+			dest.x = limits_rect.position.x + limits_rect.size.x * 0.5
+		else:
+			dest.x = clamp(dest.x, min_pos.x, max_pos.x)
+		if min_pos.y > max_pos.y:
+			dest.y = limits_rect.position.y + limits_rect.size.y * 0.5
+		else:
+			dest.y = clamp(dest.y, min_pos.y, max_pos.y)
 
-	global_position = global_position.lerp(dest, smooth_speed * delta)
+	# Snap immediately on first frame so the camera doesn't lerp from (0,0)
+	if _first_frame:
+		global_position = dest
+		_first_frame = false
+	else:
+		global_position = global_position.lerp(dest, smooth_speed * delta)
 
 	# Screen shake
 	if _shake_strength > 0.01:

@@ -76,11 +76,11 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			_start_drag(event.global_position)
+			_start_drag(get_global_mouse_position())
 		else:
 			_end_drag()
 	elif event is InputEventMouseMotion and is_dragging:
-		drag_current = event.global_position
+		drag_current = get_global_mouse_position()
 
 
 # ===========================================================================

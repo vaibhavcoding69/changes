@@ -12,7 +12,7 @@ var goal_scene: PackedScene = preload("res://scenes/goal.tscn")
 @onready var ball_spawn: Marker2D = $BallSpawn
 @onready var goal_zone: Area2D = $GoalZone
 
-@export var camera_limits: Rect2 = Rect2(-600, -400, 1200, 800)
+@export var camera_limits: Rect2 = Rect2(0, 0, 1200, 800)
 
 var ball: RigidBody2D
 var camera: Camera2D
@@ -50,6 +50,7 @@ func _ready() -> void:
 		add_child(overlay)
 
 	if ball:
+		camera.global_position = ball.global_position
 		camera.target = camera.get_path_to(ball)
 
 func _on_goal_entered(body: Node2D) -> void:
