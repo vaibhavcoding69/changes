@@ -5,13 +5,14 @@ extends Camera2D
 
 @export var target: NodePath : set = set_target
 @export var smooth_speed: float = 4.0
-@export var look_ahead: float = 0.12
+@export var look_ahead: float = 0.1
 @export var shake_decay: float = 6.0
 
 @export var clamp_to_limits: bool = false
 @export var limits_rect: Rect2 = Rect2(-600, -400, 1200, 800)
 
-@export var deadzone: Vector2 = Vector2.ZERO
+@export var deadzone: Vector2 = Vector2(18, 12)
+@export var center_offset: Vector2 = Vector2.ZERO
 @export var debug_draw: bool = false
 
 var _target_node: Node2D = null
@@ -42,6 +43,8 @@ func _ready() -> void:
 			if not _target_node.is_connected("impact_occurred", impact_callable):
 				_target_node.impact_occurred.connect(impact_callable)
 
+	pass
+
 
 func _process(delta: float) -> void:
 	# Lazy-resolve target assigned at runtime
@@ -56,7 +59,7 @@ func _process(delta: float) -> void:
 		return
 
 	# Destination with optional look-ahead
-	var dest: Vector2 = _target_node.global_position
+	var dest: Vector2 = _target_node.global_position + center_offset
 	if _target_node is RigidBody2D:
 		dest += _target_node.linear_velocity * look_ahead
 

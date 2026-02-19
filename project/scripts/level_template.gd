@@ -41,6 +41,9 @@ func _ready() -> void:
 		camera.set_limits(bounds)
 	else:
 		camera.set_limits(camera_limits)
+	# Center offset tweak (prevents slight vertical drift on some viewports)
+	if camera.has_variable("center_offset"):
+		camera.center_offset = Vector2(0, -6)
 	
 	# optional runtime debug overlay (visualizes limits & target)
 	if camera.debug_draw or ProjectSettings.has_setting("debug/show_camera_bounds") and ProjectSettings.get_setting("debug/show_camera_bounds"):
