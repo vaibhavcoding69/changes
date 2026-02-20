@@ -51,17 +51,8 @@ func _ready() -> void:
 	# Center offset tweak (prevents slight vertical drift on some viewports)
 	# camera.center_offset = Vector2(0, -6)
 
-	
-	# optional runtime debug overlay (visualizes limits & target)
-	if camera.debug_draw or ProjectSettings.has_setting("debug/show_camera_bounds") and ProjectSettings.get_setting("debug/show_camera_bounds"):
-		var overlay_script = load("res://scripts/debug/camera_debug_overlay.gd")
-		var overlay = overlay_script.new()
-		overlay.camera_path = camera.get_path()
-		add_child(overlay)
-
 	if ball:
 		camera.global_position = ball.global_position
-		camera.target = camera.get_path_to(ball)
 
 func _on_goal_entered(body: Node2D) -> void:
 	if body == ball:
