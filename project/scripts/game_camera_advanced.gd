@@ -51,6 +51,8 @@ func _ready() -> void:
     # Configure basic camera properties
     process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
     position_smoothing_enabled = false # We handle smoothing manually for more control
+    anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
+    zoom = Vector2(1.0, 1.0)  # Ensure zoom is 1:1
     
     # Connect to impact signals if possible
     _try_connect_impact_signal()
@@ -67,6 +69,13 @@ func _ready() -> void:
     if _target_node:
         global_position = _target_node.global_position
         align() # Force update
+    
+    print_rich(
+        "[color=cyan]CAMERA INIT:[/color] ",
+        "WorldBounds=", world_bounds, " | ",
+        "Zoom=", zoom, " | ",
+        "AP=", anchor_mode
+    )
 
 func _process(delta: float) -> void:
     # Shake decay
@@ -112,35 +121,50 @@ func _physics_process(delta: float) -> void:
     if use_limits:
         _constrain_to_limits()
     
-    # 5. Safety check: Is ball out of bounds?
+    # 5. Safety check: Is ball out of bounds? Reset it!
     if _target_node.global_position.y > world_bounds.end.y + 200:
-        print_rich("[color=red]ALERT: Ball has fallen out of world bounds! Resetting...[/color]")
-        # We could auto-reset here, but let's just warn for now or rely on game state
+        print_rich("[color=red]ALERT: Ball has fallen out of world bounds! Position: ", _target_node.global_position, "[/color]")
+        # Get the spawn point (BallSpawn marker)
+        var spawn_point = get_parent().get_node_or_null("BallSpawn")
+        if spawn_point:
+            _target_node.global_position = spawn_point.global_position
+            _target_node.linear_velocity = Vector2.ZERO
+            _target_node.linear_angular_velocity = 0
+            print_rich("[color=green]Ball respawned at: ", spawn_point.global_position, "[/color]")
         
 func _constrain_to_limits() -> void:
     var vp_rect = get_viewport_rect()
     var visible_size = vp_rect.size / zoom
     
+    # DEBUG: Print detailed info to understand what's happening
+    if show_debug_visuals and int(get_tree().frame) % 120 == 0:  # Once every 2 seconds
+        var is_centered_x = world_bounds.size.x < visible_size.x
+        var is_centered_y = world_bounds.size.y < visible_size.y
+        print_rich(
+            "[color=yellow]CAM:[/color] VP=", vp_rect.size, 
+            " Visible=", visible_size, " WorldSize=", world_bounds.size,
+            " CenterX=", is_centered_x, " CenterY=", is_centered_y,
+            " WorldPos=", world_bounds.position, " CamPos=", global_position
+        )
+    
     var final_pos = global_position
     
-    # Horizontal check
+    # Horizontal: decide whether to center or clamp
     if world_bounds.size.x < visible_size.x:
-        # World is smaller than viewport width -> Center it
-        if center_if_missized:
-            final_pos.x = world_bounds.position.x + world_bounds.size.x * 0.5
+        # Viewport is wider than world -> always center the world horizontally
+        final_pos.x = world_bounds.position.x + world_bounds.size.x * 0.5
     else:
-        # World is larger -> Clamp normal
+        # World is wider than viewport -> clamp camera to stay within world
         var min_x = world_bounds.position.x + visible_size.x * 0.5
         var max_x = world_bounds.end.x - visible_size.x * 0.5
         final_pos.x = clampf(final_pos.x, min_x, max_x)
         
-    # Vertical check
+    # Vertical: same logic
     if world_bounds.size.y < visible_size.y:
-        # World is smaller than viewport height -> Center it
-        if center_if_missized:
-            final_pos.y = world_bounds.position.y + world_bounds.size.y * 0.5
+        # Viewport is taller than world -> always center the world vertically
+        final_pos.y = world_bounds.position.y + world_bounds.size.y * 0.5
     else:
-        # World is larger -> Clamp normal
+        # World is taller than viewport -> clamp camera to stay within world
         var min_y = world_bounds.position.y + visible_size.y * 0.5
         var max_y = world_bounds.end.y - visible_size.y * 0.5
         final_pos.y = clampf(final_pos.y, min_y, max_y)
