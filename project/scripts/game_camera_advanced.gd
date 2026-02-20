@@ -36,6 +36,7 @@ var _target_node: Node2D
 var _shake_strength: float = 0.0
 var _current_look_ahead: Vector2 = Vector2.ZERO
 var _is_first_frame: bool = true
+var _debug_counter: int = 0  # Counter for debug printing
 
 # Cache
 @onready var _viewport: Viewport = get_viewport()
@@ -136,8 +137,10 @@ func _constrain_to_limits() -> void:
     var vp_rect = get_viewport_rect()
     var visible_size = vp_rect.size / zoom
     
-    # DEBUG: Print detailed info to understand what's happening
-    if show_debug_visuals and get_tree().get_frame_count() % 120 == 0:  # Once every 2 seconds
+    # DEBUG: Print detailed info every 120 physics frames (~2 seconds at 60 fps)
+    _debug_counter += 1
+    if show_debug_visuals and _debug_counter >= 120:
+        _debug_counter = 0
         var is_centered_x = world_bounds.size.x < visible_size.x
         var is_centered_y = world_bounds.size.y < visible_size.y
         print_rich(
