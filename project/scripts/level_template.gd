@@ -37,7 +37,7 @@ func _ready() -> void:
 	# apply per-level limits (if a CameraBounds Node2D exists use that)
 	var bounds_node = get_node_or_null("CameraBounds")
 	if bounds_node and bounds_node is Node2D:
-		var bounds := Rect2(bounds_node.position, Vector2(1024, 768))
+		var bounds := Rect2(bounds_node.position, camera_limits.size)
 		camera.set_limits(bounds)
 	else:
 		camera.set_limits(camera_limits)

@@ -798,6 +798,3 @@ position = Vector2(1212, 400)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BoundaryRight"]
 shape = SubResource("rect_boundary_v")
-
-[node name="CameraBounds" type="Node2D" parent="."]
-position = Vector2(-60, -60)
