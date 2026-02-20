@@ -22,4 +22,6 @@ func _process(_delta: float) -> void:
 	var pos = cam.global_position
 	var z = cam.zoom if cam.has_method("get") else cam.zoom
 	var txt := "Camera: (%.1f, %.1f)\nZoom: %.2f\nTarget: %s" % [pos.x, pos.y, z.x, str(cam.get("_target_node"))]
-	get_tree().root.call_deferred("set_window_title", txt)
+	var window := get_window()
+	if window:
+		window.title = txt
