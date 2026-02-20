@@ -61,7 +61,19 @@ size = Vector2(24, 800)
 script = ExtResource("1_level")
 level_number = 1
 world_number = 1
-camera_limits = Rect2(-60, -60, 1320, 920)
+camera_limits = Rect2(0, 0, 1200, 800)
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1200.0
+offset_bottom = 800.0
+color = Color(0.9, 0.95, 0.7, 1)
+
+[node name="BackgroundAccent" type="ColorRect" parent="."]
+offset_left = 0.0
+offset_top = 680.0
+offset_right = 1200.0
+offset_bottom = 800.0
+color = Color(0.8, 0.9, 0.6, 0.6)
 
 [node name="BallSpawn" type="Marker2D" parent="."]
 position = Vector2(140, 240)
@@ -762,17 +774,6 @@ surface_wave_speed = 2.2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LavaPit3"]
 shape = SubResource("rect_lava_small")
 
-[node name="Background" type="ColorRect" parent="."]
-offset_right = 1200.0
-offset_bottom = 800.0
-color = Color(0.9, 0.95, 0.7, 1)
-
-[node name="BackgroundAccent" type="ColorRect" parent="."]
-offset_left = 0.0
-offset_top = 680.0
-offset_right = 1200.0
-offset_bottom = 800.0
-color = Color(0.8, 0.9, 0.6, 0.6)
 
 [node name="BoundaryTop" type="StaticBody2D" parent="."]
 position = Vector2(600, -12)
