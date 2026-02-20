@@ -1,14 +1,7 @@
 extends Camera2D
 
 ## Advanced Game Camera
-## 
-## robust handling of:
-## - Target following with look-ahead
-## - World boundary clamping (never show void if possible)
-## - Letterboxing/Centering when viewport is larger than level
-## - Screen shake on impact
-## - Visual debugging of limits and safe zones
-## - Ball safety check (warns if ball escapes)
+## Robust handling of target following, boundary clamping, and world centering
 
 @export_group("Targeting")
 @export var target_path: NodePath
@@ -18,9 +11,7 @@ extends Camera2D
 
 @export_group("Limits & Boundaries")
 @export var use_limits: bool = true
-## If the viewport is larger than these limits, center the camera on the limits center.
 @export var center_if_missized: bool = true
-## The world bounds (x, y, width, height)
 @export var world_bounds: Rect2 = Rect2(0, 0, 1200, 800)
 
 @export_group("Effects")
@@ -31,45 +22,37 @@ extends Camera2D
 @export var show_debug_visuals: bool = true
 @export var debug_color: Color = Color.CYAN
 
-# Internal state
 var _target_node: Node2D
 var _shake_strength: float = 0.0
 var _current_look_ahead: Vector2 = Vector2.ZERO
 var _is_first_frame: bool = true
-var _debug_counter: int = 0  # Counter for debug printing
+var _debug_counter: int = 0
 
-# Cache
 @onready var _viewport: Viewport = get_viewport()
 
 func _ready() -> void:
-    # Attempt to resolve target
     if target_path:
         _target_node = get_node_or_null(target_path)
     
     if not _target_node and get_parent().has_node("Ball"):
         _target_node = get_parent().get_node("Ball")
     
-    # Configure basic camera properties
     process_callback = Camera2D.CAMERA2D_PROCESS_PHYSICS
-    position_smoothing_enabled = false # We handle smoothing manually for more control
+    position_smoothing_enabled = false
     anchor_mode = Camera2D.ANCHOR_MODE_DRAG_CENTER
-    zoom = Vector2(1.0, 1.0)  # Ensure zoom is 1:1
+    zoom = Vector2(1.0, 1.0)
     
-    # Connect to impact signals if possible
     _try_connect_impact_signal()
     
-    # Validate limits
     if use_limits:
-        # We manually manage position, so disable built-in limits to avoid conflicts
         limit_left = -10000000
         limit_top = -10000000
         limit_right = 10000000
         limit_bottom = 10000000
     
-    # Initial alignment
     if _target_node:
         global_position = _target_node.global_position
-        align() # Force update
+        align()
     
     print_rich(
         "[color=cyan]CAMERA INIT:[/color] ",
@@ -79,7 +62,6 @@ func _ready() -> void:
     )
 
 func _process(delta: float) -> void:
-    # Shake decay
     if _shake_strength > 0:
         _shake_strength = move_toward(_shake_strength, 0.0, shake_decay * delta)
         offset = Vector2(
@@ -94,16 +76,13 @@ func _process(delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
     if not is_instance_valid(_target_node):
-        # Try to find ball if we lost it (e.g. respawn)
         if get_parent().has_node("Ball"):
             _target_node = get_parent().get_node("Ball")
             _try_connect_impact_signal()
         return
 
-    # 1. Calculate desired target position
     var target_pos = _target_node.global_position
     
-    # 2. Add look-ahead based on velocity (if RigidBody)
     var look_vec = Vector2.ZERO
     if _target_node is RigidBody2D:
         look_vec = _target_node.linear_velocity * look_ahead_factor
@@ -111,41 +90,34 @@ func _physics_process(delta: float) -> void:
     _current_look_ahead = _current_look_ahead.lerp(look_vec, look_ahead_smoothing * delta)
     target_pos += _current_look_ahead
     
-    # 3. Apply smoothing
     if _is_first_frame:
         global_position = target_pos
         _is_first_frame = false
     else:
         global_position = global_position.lerp(target_pos, smooth_speed * delta)
     
-    # 4. Calculate visible area in world space
     var vp_rect = get_viewport_rect()
     var visible_size = vp_rect.size / zoom
     
-    # 4b. Force exact center when viewport == world size (prevents oscillation)
     if is_equal_approx(world_bounds.size.x, visible_size.x) and is_equal_approx(world_bounds.size.y, visible_size.y):
         global_position = world_bounds.position + world_bounds.size * 0.5
     
-    # 5. Constrain to limits (Custom logic to handle "viewport > limits" case)
     if use_limits:
         _constrain_to_limits()
     
-    # 6. Safety check: Is ball out of bounds? Reset it!
     if _target_node.global_position.y > world_bounds.end.y + 200:
         print_rich("[color=red]ALERT: Ball has fallen out of world bounds! Position: ", _target_node.global_position, "[/color]")
-        # Get the spawn point (BallSpawn marker)
         var spawn_point = get_parent().get_node_or_null("BallSpawn")
         if spawn_point:
             _target_node.global_position = spawn_point.global_position
             _target_node.linear_velocity = Vector2.ZERO
             _target_node.angular_velocity = 0.0
             print_rich("[color=green]Ball respawned at: ", spawn_point.global_position, "[/color]")
-        
+
 func _constrain_to_limits() -> void:
     var vp_rect = get_viewport_rect()
     var visible_size = vp_rect.size / zoom
     
-    # DEBUG: Print detailed info every 120 physics frames (~2 seconds at 60 fps)
     _debug_counter += 1
     if show_debug_visuals and _debug_counter >= 120:
         _debug_counter = 0
@@ -160,22 +132,16 @@ func _constrain_to_limits() -> void:
     
     var final_pos = global_position
     
-    # Horizontal: decide whether to center or clamp
     if world_bounds.size.x < visible_size.x:
-        # Viewport is wider than world -> always center the world horizontally
         final_pos.x = world_bounds.position.x + world_bounds.size.x * 0.5
     else:
-        # World is wider than viewport -> clamp camera to stay within world
         var min_x = world_bounds.position.x + visible_size.x * 0.5
         var max_x = world_bounds.end.x - visible_size.x * 0.5
         final_pos.x = clampf(final_pos.x, min_x, max_x)
-        
-    # Vertical: same logic
+    
     if world_bounds.size.y < visible_size.y:
-        # Viewport is taller than world -> always center the world vertically
         final_pos.y = world_bounds.position.y + world_bounds.size.y * 0.5
     else:
-        # World is taller than viewport -> clamp camera to stay within world
         var min_y = world_bounds.position.y + visible_size.y * 0.5
         var max_y = world_bounds.end.y - visible_size.y * 0.5
         final_pos.y = clampf(final_pos.y, min_y, max_y)
@@ -188,29 +154,5 @@ func _try_connect_impact_signal() -> void:
             _target_node.impact_occurred.connect(_on_impact)
 
 func _on_impact(strength: float) -> void:
-    # strength is usually 0..something large. Normalize roughly.
     var intensity = clampf(strength / 800.0, 0.0, 1.0)
-    _shake_strength = intensity * 5.0 # decay starts from here
-
-# --- Debug Drawing ---
-
-func _draw() -> void:
-    if not show_debug_visuals or not Engine.is_editor_hint() and not OS.is_debug_build():
-        # Only show in debug builds or editor
-        if not OS.has_feature("editor"): # But user might want to see it now
-            pass # Logic to force show based on export var
-    
-    if show_debug_visuals:
-        # Draw camera center
-        draw_line(Vector2(-10, 0), Vector2(10, 0), debug_color, 2.0)
-        draw_line(Vector2(0, -10), Vector2(0, 10), debug_color, 2.0)
-        
-        # Draw limits rect relative to camera (since draw is local)
-        # We need to transform world coordinates to local
-        var local_rect = world_bounds
-        local_rect.position -= global_position
-        
-        draw_rect(local_rect, debug_color, false, 2.0)
-        
-        # Draw "Dead zone" or "Safe Area"
-        # ...
+    _shake_strength = intensity * 5.0
