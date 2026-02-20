@@ -30,19 +30,27 @@ func _ready() -> void:
 	
 	# Set up camera to follow ball
 	camera = Camera2D.new()
-	var camera_script = load("res://scripts/camera.gd")
+	var camera_script = load("res://scripts/game_camera_advanced.gd")
 	camera.set_script(camera_script)
 	add_child(camera)
 	camera.make_current()
-	# apply per-level limits (if a CameraBounds Node2D exists use that)
-	var bounds_node = get_node_or_null("CameraBounds")
-	if bounds_node and bounds_node is Node2D:
-		var bounds := Rect2(bounds_node.position, camera_limits.size)
-		camera.set_limits(bounds)
-	else:
-		camera.set_limits(camera_limits)
+	
+	# Configure the advanced camera
+	if "world_bounds" in camera:
+		# apply per-level limits (if a CameraBounds Node2D exists use that)
+		var bounds_node = get_node_or_null("CameraBounds")
+		if bounds_node and bounds_node is Node2D:
+			camera.world_bounds = Rect2(bounds_node.position, camera_limits.size)
+		else:
+			camera.world_bounds = camera_limits
+			
+		camera.target_path = camera.get_path_to(ball) if ball else NodePath()
+		camera.use_limits = true
+		camera.center_if_missized = true
+	
 	# Center offset tweak (prevents slight vertical drift on some viewports)
-	camera.center_offset = Vector2(0, -6)
+	# camera.center_offset = Vector2(0, -6)
+
 	
 	# optional runtime debug overlay (visualizes limits & target)
 	if camera.debug_draw or ProjectSettings.has_setting("debug/show_camera_bounds") and ProjectSettings.get_setting("debug/show_camera_bounds"):
