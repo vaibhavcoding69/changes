@@ -137,7 +137,7 @@ func _constrain_to_limits() -> void:
     var visible_size = vp_rect.size / zoom
     
     # DEBUG: Print detailed info to understand what's happening
-    if show_debug_visuals and int(get_tree().frame) % 120 == 0:  # Once every 2 seconds
+    if show_debug_visuals and get_tree().get_frame_count() % 120 == 0:  # Once every 2 seconds
         var is_centered_x = world_bounds.size.x < visible_size.x
         var is_centered_y = world_bounds.size.y < visible_size.y
         print_rich(
