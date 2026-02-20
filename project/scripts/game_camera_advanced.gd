@@ -198,8 +198,8 @@ func _draw() -> void:
     if not show_debug_visuals or not Engine.is_editor_hint() and not OS.is_debug_build():
         # Only show in debug builds or editor
         if not OS.has_feature("editor"): # But user might want to see it now
-             pass # Logic to force show based on export var
-             
+            pass # Logic to force show based on export var
+    
     if show_debug_visuals:
         # Draw camera center
         draw_line(Vector2(-10, 0), Vector2(10, 0), debug_color, 2.0)
