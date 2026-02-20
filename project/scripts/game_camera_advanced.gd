@@ -118,11 +118,19 @@ func _physics_process(delta: float) -> void:
     else:
         global_position = global_position.lerp(target_pos, smooth_speed * delta)
     
-    # 4. Constrain to limits (Custom logic to handle "viewport > limits" case)
+    # 4. Calculate visible area in world space
+    var vp_rect = get_viewport_rect()
+    var visible_size = vp_rect.size / zoom
+    
+    # 4b. Force exact center when viewport == world size (prevents oscillation)
+    if is_equal_approx(world_bounds.size.x, visible_size.x) and is_equal_approx(world_bounds.size.y, visible_size.y):
+        global_position = world_bounds.position + world_bounds.size * 0.5
+    
+    # 5. Constrain to limits (Custom logic to handle "viewport > limits" case)
     if use_limits:
         _constrain_to_limits()
     
-    # 5. Safety check: Is ball out of bounds? Reset it!
+    # 6. Safety check: Is ball out of bounds? Reset it!
     if _target_node.global_position.y > world_bounds.end.y + 200:
         print_rich("[color=red]ALERT: Ball has fallen out of world bounds! Position: ", _target_node.global_position, "[/color]")
         # Get the spawn point (BallSpawn marker)
@@ -130,7 +138,7 @@ func _physics_process(delta: float) -> void:
         if spawn_point:
             _target_node.global_position = spawn_point.global_position
             _target_node.linear_velocity = Vector2.ZERO
-            _target_node.linear_angular_velocity = 0
+            _target_node.angular_velocity = 0.0
             print_rich("[color=green]Ball respawned at: ", spawn_point.global_position, "[/color]")
         
 func _constrain_to_limits() -> void:
