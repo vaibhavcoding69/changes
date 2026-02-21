@@ -22,6 +22,7 @@ func _ready() -> void:
 	if ball_spawn:
 		ball = ball_scene.instantiate()
 		ball.position = ball_spawn.position
+		ball.world_bounds = camera_limits
 		add_child(ball)
 	
 	# Set up goal

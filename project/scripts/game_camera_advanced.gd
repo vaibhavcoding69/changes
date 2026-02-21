@@ -105,8 +105,11 @@ func _physics_process(delta: float) -> void:
     if use_limits:
         _constrain_to_limits()
     
-    if _target_node.global_position.y > world_bounds.end.y + 200:
-        print_rich("[color=red]ALERT: Ball has fallen out of world bounds! Position: ", _target_node.global_position, "[/color]")
+    var ball_pos = _target_node.global_position
+    var escape_margin = 300.0
+    if ball_pos.y > world_bounds.end.y + escape_margin or ball_pos.y < world_bounds.position.y - escape_margin \
+            or ball_pos.x > world_bounds.end.x + escape_margin or ball_pos.x < world_bounds.position.x - escape_margin:
+        print_rich("[color=red]ALERT: Ball escaped world bounds! Position: ", ball_pos, "[/color]")
         var spawn_point = get_parent().get_node_or_null("BallSpawn")
         if spawn_point:
             _target_node.global_position = spawn_point.global_position
@@ -119,7 +122,7 @@ func _constrain_to_limits() -> void:
     var visible_size = vp_rect.size / zoom
     
     _debug_counter += 1
-    if show_debug_visuals and _debug_counter >= 120:
+    if show_debug_visuals and _debug_counter >= 600:
         _debug_counter = 0
         var is_centered_x = world_bounds.size.x < visible_size.x
         var is_centered_y = world_bounds.size.y < visible_size.y

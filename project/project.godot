@@ -22,6 +22,7 @@ TransitionManager="*res://scripts/transition_manager.gd"
 window/size/viewport_width=1200
 window/size/viewport_height=800
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 window/vsync/vsync_mode=1
 
 [input]
@@ -54,4 +55,4 @@ gdscript/warnings/treat_warnings_as_errors=false
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-environment/defaults/default_clear_color=Color(0.1, 0.12, 0.17, 1)
+environment/defaults/default_clear_color=Color(0.9, 0.95, 0.7, 1)

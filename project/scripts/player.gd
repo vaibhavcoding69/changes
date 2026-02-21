@@ -15,6 +15,9 @@ extends RigidBody2D
 @export var highlight_color: Color = Color(1.0, 0.97, 0.92)
 @export var outline_color: Color = Color(0.6, 0.52, 0.38)
 
+@export_group("World Bounds")
+@export var world_bounds: Rect2 = Rect2(0, 0, 1200, 800)
+
 # --- State ---
 var is_dragging: bool = false
 var drag_start: Vector2 = Vector2.ZERO
@@ -46,6 +49,41 @@ func _ready() -> void:
 	contact_monitor = true
 	max_contacts_reported = 4
 	body_entered.connect(_on_collision)
+
+
+func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	# Cap velocity to prevent tunneling through walls
+	var vel := state.linear_velocity
+	var max_speed := 2500.0
+	if vel.length() > max_speed:
+		state.linear_velocity = vel.normalized() * max_speed
+	
+	# Hard boundary enforcement (safety net if physics walls fail)
+	if world_bounds.size != Vector2.ZERO:
+		var pos := state.transform.origin
+		var changed := false
+		var margin := ball_radius + 2.0
+		
+		if pos.x < world_bounds.position.x + margin:
+			pos.x = world_bounds.position.x + margin
+			state.linear_velocity.x = abs(state.linear_velocity.x) * 0.5
+			changed = true
+		elif pos.x > world_bounds.end.x - margin:
+			pos.x = world_bounds.end.x - margin
+			state.linear_velocity.x = -abs(state.linear_velocity.x) * 0.5
+			changed = true
+		
+		if pos.y < world_bounds.position.y + margin:
+			pos.y = world_bounds.position.y + margin
+			state.linear_velocity.y = abs(state.linear_velocity.y) * 0.5
+			changed = true
+		elif pos.y > world_bounds.end.y - margin:
+			pos.y = world_bounds.end.y - margin
+			state.linear_velocity.y = -abs(state.linear_velocity.y) * 0.5
+			changed = true
+		
+		if changed:
+			state.transform.origin = pos
 
 
 func _process(delta: float) -> void:
