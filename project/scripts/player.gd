@@ -23,6 +23,8 @@ var is_dragging: bool = false
 var drag_start: Vector2 = Vector2.ZERO
 var drag_current: Vector2 = Vector2.ZERO
 var shot_count: int = 0
+# True when drag was started while ball was still moving
+var _drag_slow_mode: bool = false
 
 # --- Animation ---
 var _squash: Vector2 = Vector2.ONE
@@ -52,6 +54,14 @@ func _ready() -> void:
 
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	# Heavy deceleration while dragging a moving ball
+	if is_dragging and _drag_slow_mode:
+		state.linear_velocity *= 0.80
+		if state.linear_velocity.length() < REST_THRESHOLD:
+			state.linear_velocity = Vector2.ZERO
+			_drag_slow_mode = false
+			freeze = true
+
 	# Cap velocity to prevent tunneling through walls
 	var vel := state.linear_velocity
 	var max_speed := 2500.0
@@ -236,12 +246,18 @@ func _draw_power_ring() -> void:
 # ===========================================================================
 
 func _start_drag(mpos: Vector2) -> void:
-	if global_position.distance_to(mpos) > drag_radius or not _is_resting():
+	if global_position.distance_to(mpos) > drag_radius:
 		return
 	is_dragging = true
 	drag_start = mpos
 	drag_current = mpos
-	freeze = true
+	if _is_resting():
+		# Ball is already still — freeze and aim like normal
+		_drag_slow_mode = false
+		freeze = true
+	else:
+		# Ball is moving — don't freeze yet, bleed off velocity in _integrate_forces
+		_drag_slow_mode = true
 	# Grab squash
 	_squash = Vector2(1.1, 0.9)
 
@@ -250,6 +266,7 @@ func _end_drag() -> void:
 	if not is_dragging:
 		return
 	is_dragging = false
+	_drag_slow_mode = false
 	freeze = false
 
 	var drag_vec := drag_start - drag_current
