@@ -43,6 +43,7 @@ signal impact_occurred(strength: float)
 
 
 func _ready() -> void:
+	add_to_group("ball")
 	lock_rotation = true
 	physics_material_override = PhysicsMaterial.new()
 	physics_material_override.bounce = 0.6
